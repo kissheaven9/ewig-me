@@ -151,6 +151,64 @@ window.DATA = {
                ru: "Глава комитета по вопросам «Семьи и демографии» сформулировала преимущества цифрового хранения памяти" } }
   ],
 
+  /* Полные мемориалы для публичной страницы (факты из открытых источников) */
+  memorials: {
+    beethoven: {
+      wiki: "https://de.wikipedia.org/wiki/Ludwig_van_Beethoven",
+      info: [
+        { k: { de: "Geburtsort", ru: "Место рождения" }, v: { de: "Bonn, Deutschland", ru: "Бонн, Германия" } },
+        { k: { de: "Sterbeort", ru: "Место смерти" }, v: { de: "Wien, Österreich", ru: "Вена, Австрия" } },
+        { k: { de: "Beruf", ru: "Род деятельности" }, v: { de: "Komponist, Pianist", ru: "Композитор, пианист" } },
+        { k: { de: "Ausbildung", ru: "Образование" }, v: { de: "Schüler von Joseph Haydn", ru: "Ученик Йозефа Гайдна" } },
+        { k: { de: "Staatsangehörigkeit", ru: "Гражданство" }, v: { de: "Deutschland", ru: "Германия" } },
+        { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Ehrenbürger der Stadt Wien", ru: "Почётный гражданин Вены" } }
+      ],
+      bio: {
+        de: ["Ludwig van Beethoven wurde 1770 in Bonn geboren und gilt als einer der bedeutendsten Komponisten der Musikgeschichte. Schon früh zeigte sich sein außergewöhnliches Talent; mit 21 Jahren zog er nach Wien, wo er bei Joseph Haydn studierte und rasch als virtuoser Pianist und Komponist bekannt wurde.",
+             "Trotz eines fortschreitenden Gehörverlusts, der ihn schließlich völlig ertauben ließ, schuf er einige seiner größten Werke – darunter neun Sinfonien, die bis heute weltweit gespielt werden. Sein Schaffen bildet den Übergang von der Klassik zur Romantik. Beethoven starb 1827 in Wien."],
+        ru: ["Людвиг ван Бетховен родился в 1770 году в Бонне и считается одним из величайших композиторов в истории музыки. Его выдающийся талант проявился рано; в 21 год он переехал в Вену, где учился у Йозефа Гайдна и быстро прославился как виртуозный пианист и композитор.",
+             "Несмотря на прогрессирующую глухоту, полностью лишившую его слуха, он создал величайшие произведения — в том числе девять симфоний, которые исполняются во всём мире и сегодня. Его творчество стало переходом от классицизма к романтизму. Бетховен умер в 1827 году в Вене."]
+      },
+      grave: { de: "Zentralfriedhof, Wien", ru: "Центральное кладбище, Вена" }, coords: "48.1516, 16.4415"
+    },
+    goethe: {
+      wiki: "https://de.wikipedia.org/wiki/Johann_Wolfgang_von_Goethe",
+      info: [
+        { k: { de: "Geburtsort", ru: "Место рождения" }, v: { de: "Frankfurt am Main", ru: "Франкфурт-на-Майне" } },
+        { k: { de: "Sterbeort", ru: "Место смерти" }, v: { de: "Weimar, Deutschland", ru: "Веймар, Германия" } },
+        { k: { de: "Beruf", ru: "Род деятельности" }, v: { de: "Dichter, Naturforscher, Staatsmann", ru: "Поэт, натуралист, государственный деятель" } },
+        { k: { de: "Ausbildung", ru: "Образование" }, v: { de: "Rechtswissenschaften, Leipzig & Straßburg", ru: "Право, Лейпциг и Страсбург" } },
+        { k: { de: "Staatsangehörigkeit", ru: "Гражданство" }, v: { de: "Deutschland", ru: "Германия" } },
+        { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Geheimrat des Herzogtums Weimar", ru: "Тайный советник герцогства Веймар" } }
+      ],
+      bio: {
+        de: ["Johann Wolfgang von Goethe wurde 1749 in Frankfurt am Main geboren und ist der wohl bekannteste deutsche Dichter. Sein Werk umfasst Lyrik, Dramen und Romane – vom „Werther“ bis zum „Faust“, an dem er über sechzig Jahre arbeitete.",
+             "Goethe war zugleich Naturforscher, Zeichner und Staatsmann am Hof von Weimar, wo er den größten Teil seines Lebens verbrachte. Er prägte die Epoche der Weimarer Klassik und starb 1832 hochgeehrt in Weimar."],
+        ru: ["Иоганн Вольфганг фон Гёте родился в 1749 году во Франкфурте-на-Майне и является, пожалуй, самым известным немецким поэтом. Его наследие включает лирику, драмы и романы — от «Вертера» до «Фауста», над которым он работал более шестидесяти лет.",
+             "Гёте был также натуралистом, художником и государственным деятелем при веймарском дворе, где провёл бо́льшую часть жизни. Он определил эпоху веймарской классики и умер в 1832 году в Веймаре, окружённый почётом."]
+      },
+      grave: { de: "Fürstengruft, Weimar", ru: "Княжеская усыпальница, Веймар" }, coords: "50.9757, 11.3255"
+    },
+    einstein: {
+      wiki: "https://de.wikipedia.org/wiki/Albert_Einstein",
+      info: [
+        { k: { de: "Geburtsort", ru: "Место рождения" }, v: { de: "Ulm, Deutschland", ru: "Ульм, Германия" } },
+        { k: { de: "Sterbeort", ru: "Место смерти" }, v: { de: "Princeton, USA", ru: "Принстон, США" } },
+        { k: { de: "Beruf", ru: "Род деятельности" }, v: { de: "Physiker", ru: "Физик" } },
+        { k: { de: "Ausbildung", ru: "Образование" }, v: { de: "ETH Zürich", ru: "Политехникум, Цюрих" } },
+        { k: { de: "Staatsangehörigkeit", ru: "Гражданство" }, v: { de: "Deutschland, Schweiz, USA", ru: "Германия, Швейцария, США" } },
+        { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Nobelpreis für Physik (1921)", ru: "Нобелевская премия по физике (1921)" } }
+      ],
+      bio: {
+        de: ["Albert Einstein wurde 1879 in Ulm geboren und zählt zu den bedeutendsten Physikern aller Zeiten. Mit seiner speziellen und allgemeinen Relativitätstheorie veränderte er grundlegend unser Verständnis von Raum, Zeit und Gravitation.",
+             "1921 erhielt er den Nobelpreis für Physik. Als überzeugter Pazifist und Humanist emigrierte er 1933 in die USA, wo er bis zu seinem Tod 1955 in Princeton forschte und lehrte."],
+        ru: ["Альберт Эйнштейн родился в 1879 году в Ульме и входит в число величайших физиков всех времён. Своими специальной и общей теориями относительности он коренным образом изменил наше понимание пространства, времени и гравитации.",
+             "В 1921 году он получил Нобелевскую премию по физике. Убеждённый пацифист и гуманист, в 1933 году он эмигрировал в США, где до самой смерти в 1955 году работал и преподавал в Принстоне."]
+      },
+      grave: { de: "Asche verstreut, Princeton", ru: "Прах развеян, Принстон" }, coords: "40.3487, 74.6590"
+    }
+  },
+
   testimonials: [
     { name: { de: "Maria, 45 Jahre", ru: "Мария, 45 лет" },
       quote: { de: "Jetzt weiß ich, dass die Stimme meiner Mutter für meine Enkel bewahrt ist",

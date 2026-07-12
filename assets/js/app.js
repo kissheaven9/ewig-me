@@ -27,6 +27,15 @@
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>'
   };
 
+  function portrait(name) {
+    var ini = (name || "").trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase();
+    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">' +
+      '<defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe6dc"/><stop offset="1" stop-color="#ddccbc"/></linearGradient></defs>' +
+      '<rect width="200" height="200" fill="url(#pg)"/><circle cx="100" cy="82" r="34" fill="#fff" opacity=".55"/>' +
+      '<path d="M46 168c0-30 24-46 54-46s54 16 54 46z" fill="#fff" opacity=".55"/>' +
+      '<text x="100" y="112" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="30" font-weight="600" fill="#bb9174" opacity=".9">' + ini + '</text></svg>';
+  }
+
   /* ---------- render ---------- */
   function renderAvatars() {
     var w = $("#heroAvatars"); if (!w) return; w.innerHTML = "";
@@ -177,6 +186,7 @@
     state.lang = lang; localStorage.setItem(LANG_KEY, lang);
     $all("#langSwitch button").forEach(function (b) { b.classList.toggle("is-active", b.getAttribute("data-lang") === lang); });
     renderAll();
+    if (state.route && state.route !== "/") routeTo(state.route); // перерисовать активный подэкран
   }
 
   /* ---------- reveal ---------- */
@@ -198,7 +208,298 @@
     setTimeout(function () { e.style.opacity = "0"; }, 2600);
     setTimeout(function () { e.remove(); }, 3000);
   }
-  function go(path) { if (!path || path === "/") return; toast(t("common.soon")); }
+  /* ---------- screens / router ---------- */
+  function showScreen(name) {
+    $all(".screen").forEach(function (s) { s.classList.toggle("is-active", s.id === "screen-" + name); });
+    var f = $(".footer"); if (f) f.style.display = "";
+    window.scrollTo(0, 0);
+  }
+  function go(path) {
+    if (!path) return;
+    if (location.hash !== "#" + path) { location.hash = "#" + path; }
+    else routeTo(path);
+  }
+  function routeTo(path) {
+    state.route = path;
+    if (!path || path === "/" || path === "") { showScreen("home"); return; }
+    var p = path.replace(/^\//, "").split("/"), seg = p[0], id = p[1];
+    if (seg === "page") { renderPublic(id); showScreen("page"); }
+    else if (seg === "create") { renderCreate(); showScreen("create"); }
+    else if (seg === "editor") { renderEditor(id); showScreen("editor"); }
+    else if (seg === "ai") { renderAI(id); showScreen("ai"); }
+    else if (seg === "cabinet") { renderCabinet(); showScreen("cabinet"); }
+    else if (seg === "plaque") { renderPlaque(id); showScreen("plaque"); }
+    else if (seg === "checkout") { renderCheckout(id); showScreen("checkout"); }
+    else { showScreen("home"); toast(t("common.soon")); }
+  }
+
+  /* ---------- localStorage pages ---------- */
+  function getPages() { try { return JSON.parse(localStorage.getItem("ewig_pages") || "[]"); } catch (e) { return []; } }
+  function setPages(a) { localStorage.setItem("ewig_pages", JSON.stringify(a)); }
+  function savePage(p) { var a = getPages(); a.push(p); setPages(a); }
+  function updatePage(id, patch) { var a = getPages().map(function (x) { return x.id === id ? Object.assign(x, patch) : x; }); setPages(a); }
+  function findPage(id) { var u = getPages().filter(function (x) { return x.id === id; })[0]; return u || null; }
+
+  function makeQR(text) {
+    try { var q = qrcode(0, "M"); q.addData(text); q.make(); return q.createDataURL(6, 4); }
+    catch (e) { return ""; }
+  }
+  function backLink() { return '<a class="back-link" href="#/" data-route="/">' + ICON.chevron + '<span>' + t("pub.back") + '</span></a>'; }
+
+  /* ---------- PUBLIC memorial page ---------- */
+  function renderPublic(id) {
+    var wrap = $("#screen-page");
+    var ex = D.examples.filter(function (e) { return e.id === id; })[0];
+    var mem = D.memorials[id];
+    var up = findPage(id);
+    var name, dates, born, died, years, quote, photo, infoHtml = "", bioHtml = "", grave = "", coords = "", wiki = "", plan = "extended", isUser = false;
+    if (ex && mem) {
+      name = L(ex.name); dates = ex.dates; born = L(ex.born); died = L(ex.died); years = ex.years;
+      quote = L(ex.quote); photo = ex.photo;
+      infoHtml = mem.info.map(function (i) { return '<div class="info-cell"><dt>' + L(i.k) + '</dt><dd>' + L(i.v) + '</dd></div>'; }).join("");
+      bioHtml = mem.bio[state.lang].map(function (p) { return '<p>' + p + '</p>'; }).join("");
+      grave = L(mem.grave); coords = mem.coords; wiki = mem.wiki;
+    } else if (up) {
+      isUser = true; name = up.name; born = up.born; died = up.died; dates = (up.born || "") + "–" + (up.died || "");
+      quote = up.epitaph || ""; photo = up.photo || null; plan = up.plan || "short"; grave = up.cemetery || ""; coords = up.coords || "";
+    } else { wrap.innerHTML = '<div class="container subpage">' + backLink() + '<p>' + t("common.soon") + '</p></div>'; return; }
+
+    var photoHtml = photo ? '<img src="' + photo + '" alt="' + name + '">' : portrait(name);
+    var url = location.origin + location.pathname + "#/page/" + id;
+    var html = '<div class="container subpage">' + backLink() +
+      '<div class="pub-hero">' +
+        '<div class="pub-hero__photo">' + photoHtml + '</div>' +
+        '<div><div class="pub-hero__name">' + name + '</div>' +
+        '<div class="pub-hero__dates">' + dates + (years ? ' <span>(' + years + ' ' + t("pub.years") + ')</span>' : '') + '</div>' +
+        (quote ? '<p class="pub-hero__epitaph">«' + quote + '»</p>' : '') + '</div>' +
+      '</div>';
+
+    if (infoHtml) html += '<div class="block"><div class="block__title">' + t("pub.info") + '</div><div class="info-grid">' + infoHtml + '</div></div>';
+    if (bioHtml) html += '<div class="block"><div class="block__title">' + t("pub.bio") + '</div><div class="bio-text">' + bioHtml + '</div></div>';
+    if (plan === "extended") {
+      html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div><div class="media-box"><div class="pcard__play">' + ICON.play + '</div></div></div>';
+      html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid"><div></div><div></div><div></div><div></div></div></div>';
+    }
+    if (grave) html += '<div class="block"><div class="block__title">' + t("pub.grave") + '</div><div class="map-box">' + ICON.pin + '<div class="map-coords">' + grave + (coords ? ' · ' + coords : '') + '</div></div></div>';
+    if (wiki) html += '<div class="block"><div class="block__title">' + t("pub.links") + '</div><div class="ext-links">' +
+      '<a href="' + wiki + '" target="_blank" rel="noopener" aria-label="Wikipedia"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h3l3 9 3-9h2l3 9 3-9h2l-4.5 14h-2L15 10l-3.5 9h-2L5 5z"/></svg></a>' +
+      '<a href="#" aria-label="Teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.1 10.9l7.8-3.8M8.1 13.1l7.8 3.8"/></svg></a>' +
+      '</div></div>';
+    html += '<div class="block"><div class="block__title">' + t("pub.qr") + '</div><div class="qr-block">' +
+      '<div class="qr-canvas"><img src="' + makeQR(url) + '" alt="QR"></div>' +
+      '<div class="qr-info"><p>' + t("pub.qrHint") + '</p>' +
+        '<button class="btn btn--primary" id="pubShare"><span>' + t("pub.share") + '</span></button></div>' +
+      '</div></div></div>';
+    wrap.innerHTML = html;
+    var sb = $("#pubShare"); if (sb) sb.addEventListener("click", function () {
+      if (navigator.clipboard) navigator.clipboard.writeText(url);
+      toast(t("pub.linkCopied"));
+    });
+  }
+
+  /* ---------- CREATE wizard ---------- */
+  function renderCreate() {
+    if (!state.newPage) state.newPage = { step: 1 };
+    var s = state.newPage.step || 1;
+    var wrap = $("#screen-create");
+    if (s === 1) {
+      wrap.innerHTML = '<div class="container subpage">' + backLink() +
+        '<div class="wizard"><div><div class="form-head"><h1 class="h-section">' + t("cr.title1") + '</h1><div class="step">' + t("cr.step1") + '</div></div>' +
+        '<div class="card-box"><div style="display:flex;gap:30px;flex-wrap:wrap;margin-bottom:24px">' +
+          '<label class="upload" id="upBox"><input type="file" accept="image/*" id="upFile" hidden><div class="upload__circle">' + ICON.photo + '</div><span>' + t("cr.photo") + '<br>' + t("cr.add") + '</span></label>' +
+          '<div style="flex:1;min-width:260px"><div class="field"><label>' + t("cr.name") + '</label><input id="fName" type="text" placeholder="' + t("cr.namePh") + '"><div class="field__err"></div></div></div>' +
+        '</div>' +
+        '<div class="form-grid">' + dateField("fBirth", t("cr.birth")) + dateField("fDeath", t("cr.death")) + '</div>' +
+        '<div class="field" style="margin-top:24px"><label>' + t("cr.epitaph") + '</label><textarea id="fEpitaph" placeholder="' + t("cr.epitaphPh") + '"></textarea></div>' +
+        '<div class="field" style="margin-top:20px"><label>' + t("cr.author") + '</label><input id="fAuthor" type="text" placeholder="' + t("cr.authorPh") + '"></div>' +
+        '<div class="ed-actions" style="margin-top:28px"><button class="btn btn--primary" id="crNext">' + ICON.plus + '<span>' + t("cr.create") + '</span></button></div>' +
+        '</div></div><div class="wizard__bar"><span style="height:20%"></span></div></div></div>';
+      var upFile = $("#upFile"), upBox = $("#upBox");
+      upBox.addEventListener("click", function () { upFile.click(); });
+      upFile.addEventListener("change", function () {
+        var f = upFile.files[0]; if (!f) return; var r = new FileReader();
+        r.onload = function () { state.newPage.photo = r.result; upBox.style.backgroundImage = "url(" + r.result + ")"; upBox.style.backgroundSize = "cover"; upBox.innerHTML = ""; };
+        r.readAsDataURL(f);
+      });
+      $("#crNext").addEventListener("click", function () {
+        var nm = $("#fName").value.trim();
+        if (!nm) { $("#fName").parentNode.classList.add("is-invalid"); $("#fName").parentNode.querySelector(".field__err").textContent = "!"; return; }
+        state.newPage.name = nm;
+        state.newPage.born = ($("#fBirth_y") ? $("#fBirth_y").value : "") || "";
+        state.newPage.died = ($("#fDeath_y") ? $("#fDeath_y").value : "") || "";
+        state.newPage.epitaph = $("#fEpitaph").value.trim();
+        state.newPage.author = $("#fAuthor").value.trim();
+        state.newPage.step = 2; renderCreate();
+      });
+    } else if (s === 2) {
+      wrap.innerHTML = '<div class="container subpage">' +
+        '<div class="card-box auth-card"><h2 class="h-section">' + t("cr.success") + '</h2><p>' + t("cr.loginHint") + '</p>' +
+        '<div class="field" style="text-align:left"><label>' + t("cr.email") + '</label><input id="lgEmail" type="text" placeholder="name@mail.com"></div>' +
+        '<div class="field" style="text-align:left;margin-top:16px"><label>' + t("cr.password") + '</label><input id="lgPass" type="password" placeholder="••••••"></div>' +
+        '<button class="btn btn--primary btn--block" id="crLogin" style="margin-top:24px"><span>' + t("cr.loginBtn") + '</span></button>' +
+        '<div class="auth-links"><a href="#" data-route="/create">' + t("cr.register") + '</a><a href="#" data-route="/create">' + t("cr.forgot") + '</a></div>' +
+        '</div></div>';
+      $("#crLogin").addEventListener("click", function () {
+        var id = "u_" + getPages().length + "_" + (state.newPage.name || "seite").replace(/\s+/g, "").slice(0, 6).toLowerCase();
+        var page = { id: id, name: state.newPage.name, born: state.newPage.born, died: state.newPage.died,
+          epitaph: state.newPage.epitaph, author: state.newPage.author, photo: state.newPage.photo || null, plan: "short", pub: true };
+        savePage(page); state.newPage = null; state.lastCreated = id;
+        renderCreateSuccess(id); showScreen("create");
+      });
+    }
+  }
+  function renderCreateSuccess(id) {
+    $("#screen-create").innerHTML = '<div class="container subpage"><div class="card-box auth-card">' +
+      '<div class="upload__circle" style="margin:0 auto 18px;width:70px;height:70px">' + ICON.check + '</div>' +
+      '<h2 class="h-section">' + t("cr.done") + '</h2>' +
+      '<div class="ed-actions" style="justify-content:center;margin-top:24px">' +
+      '<button class="btn btn--primary" data-route="/editor/' + id + '"><span>' + t("cr.toEdit") + '</span></button>' +
+      '<button class="btn btn--outline" data-route="/page/' + id + '"><span>' + t("cr.ok") + '</span></button></div></div></div>';
+  }
+  function dateField(idp, label) {
+    var days = "", months = "", years = "";
+    for (var d = 1; d <= 31; d++) days += '<option>' + d + '</option>';
+    for (var m = 1; m <= 12; m++) months += '<option>' + m + '</option>';
+    for (var y = 2024; y >= 1900; y--) years += '<option>' + y + '</option>';
+    return '<div class="field"><label>' + label + '</label><div class="field-row">' +
+      '<select id="' + idp + '_d"><option value="" disabled selected>' + t("cr.day") + '</option>' + days + '</select>' +
+      '<select id="' + idp + '_m"><option value="" disabled selected>' + t("cr.month") + '</option>' + months + '</select>' +
+      '<select id="' + idp + '_y"><option value="" disabled selected>' + t("cr.year") + '</option>' + years + '</select>' +
+      '</div></div>';
+  }
+
+  /* ---------- EDITOR ---------- */
+  function renderEditor(id) {
+    var page = findPage(id); var wrap = $("#screen-editor");
+    if (!page) { wrap.innerHTML = '<div class="container subpage">' + backLink() + '<p>' + t("common.soon") + '</p></div>'; return; }
+    var ext = page.plan === "extended";
+    function lockedSection(title) {
+      return '<div class="ed-section"><div class="ed-locked__overlay"><div class="ed-locked__msg">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' +
+        '<span><b style="text-transform:uppercase;font-weight:400;color:var(--ink-head)">' + title + '</b> — ' + t("ed.locked") + '</span></div>' +
+        '<button class="btn btn--primary btn--sm" data-route="/plaque/' + id + '"><span>' + t("ed.buy") + '</span></button></div></div>';
+    }
+    function openSection(title, inner) { return '<div class="ed-section"><div class="ed-section__head"><div class="ed-section__title">' + title + '</div></div>' + inner + '</div>'; }
+    var html = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:8px">' + t(ext ? "ed.titleExt" : "ed.titleShort") + '</h1>' +
+      '<p style="color:var(--ink-soft);font-size:14px;margin-bottom:28px">' + t("ed.avgTime") + '</p>';
+    if (ext) {
+      html += openSection(t("ed.bio"),
+        '<div class="bio-choice"><button class="btn btn--outline"><span>' + t("ed.bioSelf") + '</span></button>' +
+        '<button class="btn btn--primary" data-route="/ai/' + id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span>' + t("ed.bioAI") + '</span></button></div>' +
+        '<textarea style="margin-top:16px;min-height:140px" placeholder="…"></textarea>');
+      html += openSection(t("ed.photos"), '<p style="font-size:14px;color:var(--ink-body);margin-bottom:14px">' + t("ed.photosHint") + '</p><button class="btn btn--outline"><span>' + t("ed.addPhoto") + '</span></button>');
+    } else {
+      html += lockedSection(t("ed.bio")) + lockedSection(t("pub.media")) + lockedSection(t("ed.photos")) + lockedSection(t("ed.links"));
+    }
+    html += openSection(t("ed.grave"),
+      '<div class="form-grid"><div class="field"><label>' + t("ed.cemetery") + '</label><input type="text" value="' + (page.cemetery || "") + '" id="edCem"></div>' +
+      '<div class="field"><label>' + t("ed.coords") + '</label><input type="text" value="' + (page.coords || "") + '" id="edCoords" placeholder="48.15, 16.44"></div></div>');
+    html += openSection(t("ed.qr"),
+      '<div class="qr-block" style="margin-bottom:20px"><div class="qr-canvas" style="width:130px;height:130px"><img src="' + makeQR(location.origin + location.pathname + "#/page/" + id) + '"></div>' +
+      '<div style="flex:1;min-width:220px">' +
+      toggleRow("edPub", t("ed.public"), page.pub !== false) +
+      toggleRow("edIdx", t("ed.index"), true) +
+      toggleRow("edPubl", t("ed.publish"), true) + '</div></div>');
+    html += '<div class="ed-actions"><button class="btn btn--primary" id="edSave"><span>' + t("ed.save") + '</span></button>' +
+      '<a class="link-arrow" href="#/page/' + id + '" data-route="/page/' + id + '"><span>' + t("ed.preview") + '</span>' + ICON.chevron + '</a></div></div>';
+    wrap.innerHTML = html;
+    $("#edSave").addEventListener("click", function () {
+      updatePage(id, { cemetery: ($("#edCem") || {}).value || "", coords: ($("#edCoords") || {}).value || "", pub: $("#edPub").checked });
+      toast(t("ed.saved"));
+    });
+  }
+  function toggleRow(id, label, on) {
+    return '<div class="toggle-row"><span>' + label + '</span><label class="toggle"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + '><span class="toggle__track"></span></label></div>';
+  }
+
+  /* ---------- AI biographer ---------- */
+  var AI_Q = {
+    de: ["Wie hieß der Mensch mit vollem Namen und wann wurde er geboren?", "Wo ist er aufgewachsen und was prägte seine Kindheit?", "Welchen Beruf übte er aus und was bedeutete ihm die Arbeit?", "Was waren seine größten Leidenschaften und Hobbys?", "Welche Menschen waren ihm am wichtigsten?", "Welche Werte hat er im Leben vertreten?", "Was war sein größter Erfolg oder stolzester Moment?", "Welche schwierigen Zeiten hat er gemeistert?", "Woran sollen sich die Menschen bei ihm erinnern?", "Gibt es ein Zitat oder einen Satz, der ihn beschreibt?"],
+    ru: ["Как звали человека полностью и когда он родился?", "Где он вырос и что определило его детство?", "Кем он работал и что значила для него работа?", "Какие были его главные увлечения?", "Какие люди были для него самыми важными?", "Каких ценностей он придерживался в жизни?", "Что было его самым большим достижением?", "Какие трудные времена он преодолел?", "Каким люди должны его запомнить?", "Есть ли фраза, которая его описывает?"]
+  };
+  function renderAI(id) {
+    if (!state.ai || state.ai.id !== id) state.ai = { id: id, step: 0, answers: [] };
+    var wrap = $("#screen-ai"), st = state.ai;
+    if (st.step < 10) {
+      var qs = AI_Q[state.lang] || AI_Q.de;
+      wrap.innerHTML = '<div class="container subpage">' + backLink() +
+        '<div class="ai-card card-box"><div class="ai-progress">' + t("ai.question") + ' ' + (st.step + 1) + ' ' + t("ai.of") + ' 10</div>' +
+        '<div class="ai-track"><span style="width:' + ((st.step) * 10) + '%"></span></div>' +
+        '<div class="ai-q">' + qs[st.step] + '</div>' +
+        '<textarea id="aiAns" placeholder="' + t("ai.answerPh") + '"></textarea>' +
+        '<div class="ed-actions" style="margin-top:22px"><button class="btn btn--primary" id="aiNext"><span>' + (st.step === 9 ? t("ai.generate") : t("ai.next")) + '</span></button></div></div></div>';
+      $("#aiNext").addEventListener("click", function () {
+        st.answers[st.step] = $("#aiAns").value; st.step++;
+        if (st.step === 10) { renderAIResult(id); } else renderAI(id);
+      });
+    } else renderAIResult(id);
+  }
+  function renderAIResult(id) {
+    var mem = D.memorials[id] || (D.examples.filter(function (e) { return e.id === id; })[0] && D.memorials[id]);
+    var b = mem ? mem.bio[state.lang] : null;
+    var formal = b ? b.join(" ") : (state.lang === "de" ? "Ein Leben voller Hingabe und Wärme, das viele Menschen berührt hat …" : "Жизнь, полная тепла и преданности, которая тронула многих …");
+    var personal = b ? (b[0] + " " + (state.lang === "de" ? "In Erinnerung an einen Menschen, den wir sehr geliebt haben." : "В память о человеке, которого мы очень любили.")) : formal;
+    $("#screen-ai").innerHTML = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:24px">' + t("ai.title") + '</h1>' +
+      '<div class="ai-variants"><div class="ai-variant"><h4>' + t("ai.formal") + '</h4><p>' + formal + '</p><button class="btn btn--primary btn--block" data-route="/editor/' + id + '"><span>' + t("ai.choose") + '</span></button></div>' +
+      '<div class="ai-variant"><h4>' + t("ai.personal") + '</h4><p>' + personal + '</p><button class="btn btn--primary btn--block" data-route="/editor/' + id + '"><span>' + t("ai.choose") + '</span></button></div></div></div>';
+    state.ai = null;
+  }
+
+  /* ---------- CABINET ---------- */
+  function renderCabinet() {
+    var pages = getPages(); var wrap = $("#screen-cabinet");
+    var cards = pages.map(function (p) {
+      var photo = p.photo ? '<img src="' + p.photo + '" alt="">' : portrait(p.name);
+      return '<div class="cab-card"><div class="cab-card__photo">' + photo + '</div>' +
+        '<div class="cab-card__body"><span class="cab-card__tag">' + t(p.plan === "extended" ? "cab.extended" : "cab.short") + '</span>' +
+        '<div class="cab-card__name">' + p.name + '</div><div class="cab-card__dates">' + (p.born || "") + '–' + (p.died || "") + '</div>' +
+        '<div class="cab-card__actions"><button class="btn btn--outline btn--sm" data-route="/editor/' + p.id + '"><span>' + t("cab.edit") + '</span></button>' +
+        '<button class="btn btn--outline btn--sm" data-route="/page/' + p.id + '"><span>' + t("cab.view") + '</span></button>' +
+        (p.plan !== "extended" ? '<button class="btn btn--primary btn--sm" data-route="/plaque/' + p.id + '"><span>' + t("cab.expand") + '</span></button>' : '') +
+        '</div></div></div>';
+    }).join("");
+    var newCard = '<div class="cab-new" data-route="/create"><div><div class="upload__circle" style="margin:0 auto 12px">' + ICON.plus + '</div><span style="font-weight:600;font-size:14px">' + t("cab.newPage") + '</span></div></div>';
+    wrap.innerHTML = '<div class="container subpage">' + backLink() + '<h1 class="h-section" style="margin-bottom:28px">' + t("cab.title") + '</h1>' +
+      (pages.length ? '' : '<p style="color:var(--ink-soft);margin-bottom:24px">' + t("cab.empty") + '</p>') +
+      '<div class="cab-grid">' + cards + newCard + '</div></div>';
+  }
+
+  /* ---------- PLAQUE ---------- */
+  function renderPlaque(id) {
+    $("#screen-plaque").innerHTML = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:28px">' + t("pl.title") + '</h1><div class="opt-cards">' +
+      '<div class="opt-card"><div class="opt-card__inner"><div class="opt-card__title">' + t("pl.noPlaque") + '</div><p>' + t("pl.noPlaqueText") + '</p>' +
+      '<button class="btn btn--primary" data-route="/checkout/' + id + '"><span>' + t("pl.toPay") + '</span></button></div></div>' +
+      '<div class="opt-card opt-card--best"><div class="opt-card__badge">' + t("pl.best") + '</div><div class="opt-card__inner"><div class="opt-card__title">' + t("pl.delivery") + '</div><p>' + t("pl.deliveryText") + '</p>' +
+      '<button class="btn btn--outline" data-route="/checkout/' + id + '"><span>' + t("pl.choose") + '</span></button></div></div>' +
+      '</div></div>';
+  }
+
+  /* ---------- CHECKOUT ---------- */
+  function renderCheckout(id) {
+    $("#screen-checkout").innerHTML = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:28px">' + t("co.title") + '</h1>' +
+      '<div class="order card-box"><div class="order__row"><span>' + t("co.item") + '</span><span>69 €</span></div>' +
+      '<div class="order__total"><span>' + t("co.total") + '</span><b>69 €</b></div>' +
+      '<div class="field" style="margin-top:10px"><label>' + t("co.card") + '</label><input id="ccNum" type="text" placeholder="1234 5678 9012 3456" maxlength="19"><div class="field__err"></div></div>' +
+      '<div class="form-grid" style="margin-top:16px"><div class="field"><label>' + t("co.expiry") + '</label><input id="ccExp" type="text" placeholder="MM/JJ" maxlength="5"></div>' +
+      '<div class="field"><label>' + t("co.cvc") + '</label><input id="ccCvc" type="text" placeholder="123" maxlength="4"></div></div>' +
+      '<div class="field" style="margin-top:16px"><label>' + t("co.cardholder") + '</label><input id="ccName" type="text" placeholder="Max Mustermann"></div>' +
+      '<button class="btn btn--primary btn--block" id="payBtn" style="margin-top:24px"><span>' + t("co.pay") + ' 69 €</span></button></div></div>';
+    $("#payBtn").addEventListener("click", function () {
+      var num = ($("#ccNum").value || "").replace(/\s/g, "");
+      if (num.length < 12) { $("#ccNum").parentNode.classList.add("is-invalid"); $("#ccNum").parentNode.querySelector(".field__err").textContent = "!"; return; }
+      if (id && findPage(id)) updatePage(id, { plan: "extended" });
+      openModal('<button class="modal__close" data-x>' + ICON.close + '</button><div class="upload__circle" style="margin:0 auto 16px;width:64px;height:64px">' + ICON.check + '</div>' +
+        '<h3 class="modal__title" style="text-align:center">' + t("co.paid") + '</h3><p style="text-align:center;color:var(--ink-body)">' + t("co.paidText") + '</p>' +
+        '<button class="btn btn--primary btn--block" style="margin-top:20px" data-route="/cabinet"><span>' + t("cab.title") + '</span></button>');
+      var x = $("#modalDialog [data-x]"); if (x) x.addEventListener("click", closeModal);
+    });
+  }
+  function openModal(html) { $("#modalDialog").innerHTML = html; $("#modal").classList.add("is-open"); document.body.classList.add("no-scroll"); }
+  function closeModal() { $("#modal").classList.remove("is-open"); document.body.classList.remove("no-scroll"); }
 
   function bind() {
     $all("#langSwitch button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); }); });
@@ -221,5 +522,12 @@
   document.addEventListener("DOMContentLoaded", function () {
     $all("#langSwitch button").forEach(function (b) { b.classList.toggle("is-active", b.getAttribute("data-lang") === state.lang); });
     bind(); renderAll();
+    window.addEventListener("hashchange", function () {
+      var h = location.hash.replace(/^#/, "");
+      if (h.charAt(0) === "/") { routeTo(h); applyI18n(); }
+      else if (h === "") routeTo("/");
+    });
+    var ih = location.hash.replace(/^#/, "");
+    if (ih.charAt(0) === "/") { routeTo(ih); applyI18n(); }
   });
 })();

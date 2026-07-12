@@ -61,7 +61,59 @@ window.I18N = {
     "footer.supportText": "Kontaktieren Sie uns, wenn Sie Hilfe oder Informationen benötigen.",
     "footer.write": "Schreiben Sie uns",
 
-    "common.soon": "Dieser Bereich wird gerade gebaut."
+    "pub.back": "Zurück zur Startseite", "pub.info": "Kurzinformation", "pub.bio": "Biografie",
+    "pub.media": "Medien", "pub.photos": "Fotos", "pub.grave": "Wie finde ich das Grab",
+    "pub.links": "Externe Links", "pub.qr": "QR-Code dieser Seite",
+    "pub.qrHint": "Zum Ausdrucken für ein Schild oder den Grabstein.", "pub.share": "Teilen",
+    "pub.years": "Lebensjahre", "pub.linkCopied": "Link kopiert",
+
+    "cr.title1": "Grunddaten ausfüllen", "cr.step1": "Schritt 1 von 2", "cr.step2": "Schritt 2 von 2",
+    "cr.photo": "Erinnerungsfoto", "cr.add": "Hinzufügen", "cr.name": "Name des Verstorbenen",
+    "cr.namePh": "z. B. Hans Müller", "cr.birth": "Geburtsdatum", "cr.death": "Sterbedatum",
+    "cr.day": "Tag", "cr.month": "Monat", "cr.year": "Jahr",
+    "cr.epitaph": "Kurze Grabinschrift", "cr.epitaphPh": "z. B. Ein geliebter Mensch, für immer in unseren Herzen.",
+    "cr.author": "Autor der Grabinschrift", "cr.authorPh": "Ihr Name",
+    "cr.create": "Seite erstellen",
+    "cr.success": "Die Kurzversion Ihrer Seite wurde erfolgreich erstellt!",
+    "cr.loginHint": "Nur noch ein letzter Schritt – bitte melden Sie sich an.",
+    "cr.email": "E-Mail oder Telefonnummer", "cr.password": "Passwort",
+    "cr.loginBtn": "Anmelden und Seite erstellen", "cr.register": "Registrieren",
+    "cr.forgot": "Passwort vergessen?", "cr.noAccount": "Sie haben noch kein Konto?",
+    "cr.ok": "OK", "cr.toEdit": "Zur Bearbeitung", "cr.done": "Fertig! Ihre Seite wurde erstellt.",
+
+    "ed.titleShort": "Kurzseite bearbeiten", "ed.titleExt": "Erweiterte Seite bearbeiten",
+    "ed.avgTime": "Durchschnittliche Ausfüllzeit: 7 Minuten",
+    "ed.locked": "Dieser Bereich ist nur auf der erweiterten Seite verfügbar", "ed.buy": "Kaufen",
+    "ed.info": "Kurzinformation", "ed.bio": "Biografie", "ed.bioSelf": "Selbst schreiben",
+    "ed.bioAI": "Mit KI-Assistent erstellen", "ed.media": "Mediendateien", "ed.photos": "Fotos",
+    "ed.photosHint": "Wählen und fügen Sie bis zu 10 Fotos hinzu", "ed.addPhoto": "Fotos hinzufügen",
+    "ed.links": "Externe Links", "ed.addMore": "Weitere hinzufügen",
+    "ed.grave": "Grabstätte", "ed.cemetery": "Name des Friedhofs", "ed.coords": "Koordinaten",
+    "ed.qr": "QR-Code dieser Seite", "ed.public": "Öffentlich", "ed.index": "Indexieren",
+    "ed.publish": "Veröffentlichen", "ed.save": "Änderungen speichern", "ed.preview": "Vorschau",
+    "ed.saved": "Änderungen gespeichert",
+
+    "ai.title": "Biografie mit KI-Assistent erstellen", "ai.question": "Frage", "ai.of": "von",
+    "ai.next": "Nächste Frage", "ai.generate": "Biografie generieren", "ai.answerPh": "Schreiben Sie Ihre Antwort …",
+    "ai.formal": "Formeller Stil", "ai.personal": "Persönlicher Stil",
+    "ai.choose": "Diese Variante wählen", "ai.generating": "Biografie wird generiert …",
+
+    "cab.title": "Meine Seiten", "cab.edit": "Bearbeiten", "cab.view": "Ansehen", "cab.expand": "Erweitern",
+    "cab.newPage": "Neue Seite erstellen", "cab.extended": "Erweitert", "cab.short": "Kurz",
+    "cab.public": "Öffentlich", "cab.empty": "Sie haben noch keine Seiten erstellt.",
+
+    "pl.title": "Wie möchten Sie das Schild erhalten?", "pl.noPlaque": "Kein Schild nötig",
+    "pl.noPlaqueText": "Beim Kauf der erweiterten Seite ist das QR-Schild kostenlos – Sie drucken es selbst aus.",
+    "pl.toPay": "Zur Zahlung", "pl.delivery": "Lieferung nach Hause", "pl.best": "Optimale Wahl",
+    "pl.deliveryText": "Wir fertigen ein gravertes Metallschild mit QR-Code und senden es Ihnen zu.",
+    "pl.choose": "Auswählen",
+
+    "co.title": "Ihre Bestellung", "co.item": "Erweiterte Seite ohne Schild", "co.total": "Gesamtsumme",
+    "co.pay": "Bezahlen", "co.card": "Kartennummer", "co.expiry": "Gültig bis", "co.cvc": "CVC",
+    "co.paid": "Zahlung erfolgreich!", "co.paidText": "Ihre Seite ist jetzt eine erweiterte Seite.",
+    "co.cardholder": "Karteninhaber",
+
+    "common.soon": "Dieser Bereich wird gerade gebaut.", "common.close": "Schließen"
   },
 
   ru: {
@@ -123,6 +175,58 @@ window.I18N = {
     "footer.supportText": "Свяжитесь с нами, если вам нужна помощь или информация.",
     "footer.write": "Написать нам",
 
-    "common.soon": "Этот раздел сейчас в разработке."
+    "pub.back": "На главную", "pub.info": "Краткая информация", "pub.bio": "Биография",
+    "pub.media": "Медиафайлы", "pub.photos": "Фотографии", "pub.grave": "Как найти захоронение",
+    "pub.links": "Внешние ссылки", "pub.qr": "QR-код этой страницы",
+    "pub.qrHint": "Для печати на табличке или надгробии.", "pub.share": "Поделиться",
+    "pub.years": "лет жизни", "pub.linkCopied": "Ссылка скопирована",
+
+    "cr.title1": "Заполните основные данные", "cr.step1": "Шаг 1 из 2", "cr.step2": "Шаг 2 из 2",
+    "cr.photo": "Памятное фото", "cr.add": "Добавить", "cr.name": "Имя усопшего",
+    "cr.namePh": "напр. Ганс Мюллер", "cr.birth": "Дата рождения", "cr.death": "Дата смерти",
+    "cr.day": "День", "cr.month": "Месяц", "cr.year": "Год",
+    "cr.epitaph": "Краткая эпитафия", "cr.epitaphPh": "напр. Светлая душа, навсегда в наших сердцах.",
+    "cr.author": "Автор эпитафии", "cr.authorPh": "Ваше имя",
+    "cr.create": "Создать страницу",
+    "cr.success": "Краткая версия Вашей страницы успешно создана!",
+    "cr.loginHint": "Остался последний шаг — авторизуйтесь.",
+    "cr.email": "E-Mail или номер телефона", "cr.password": "Пароль",
+    "cr.loginBtn": "Войти и создать страницу", "cr.register": "Зарегистрироваться",
+    "cr.forgot": "Забыли пароль?", "cr.noAccount": "У вас ещё нет аккаунта?",
+    "cr.ok": "ОК", "cr.toEdit": "Перейти к редактированию", "cr.done": "Готово! Ваша страница создана.",
+
+    "ed.titleShort": "Редактирование краткой страницы", "ed.titleExt": "Редактирование расширенной страницы",
+    "ed.avgTime": "Среднее время заполнения 7 минут",
+    "ed.locked": "Этот раздел доступен только на расширенной странице", "ed.buy": "Купить",
+    "ed.info": "Краткая информация", "ed.bio": "Биография", "ed.bioSelf": "Написать самостоятельно",
+    "ed.bioAI": "Создать с помощью ИИ-помощника", "ed.media": "Медиафайлы", "ed.photos": "Фотографии",
+    "ed.photosHint": "Выберите и добавьте до 10 фото", "ed.addPhoto": "Добавить фото",
+    "ed.links": "Внешние ссылки", "ed.addMore": "Добавить ещё",
+    "ed.grave": "Место захоронения", "ed.cemetery": "Название кладбища", "ed.coords": "Координаты",
+    "ed.qr": "QR-код этой страницы", "ed.public": "Доступно для всех", "ed.index": "Индексировать",
+    "ed.publish": "Публиковать", "ed.save": "Сохранить изменения", "ed.preview": "Предпросмотр",
+    "ed.saved": "Изменения сохранены",
+
+    "ai.title": "Создание биографии с ИИ-помощником", "ai.question": "Вопрос", "ai.of": "из",
+    "ai.next": "Следующий вопрос", "ai.generate": "Сгенерировать биографию", "ai.answerPh": "Напишите ваш ответ…",
+    "ai.formal": "Официальный стиль", "ai.personal": "Личный стиль",
+    "ai.choose": "Выбрать этот вариант", "ai.generating": "Биография генерируется…",
+
+    "cab.title": "Мои страницы", "cab.edit": "Редактировать", "cab.view": "Смотреть", "cab.expand": "Расширить",
+    "cab.newPage": "Создать новую страницу", "cab.extended": "Расширенная", "cab.short": "Краткая",
+    "cab.public": "Доступно для всех", "cab.empty": "Вы ещё не создали ни одной страницы.",
+
+    "pl.title": "Как вам удобно получить табличку?", "pl.noPlaque": "Табличка не нужна",
+    "pl.noPlaqueText": "При оплате расширенной страницы QR-табличка бесплатна — вы распечатаете её сами.",
+    "pl.toPay": "Перейти к оплате", "pl.delivery": "Доставка на дом", "pl.best": "Оптимальный выбор",
+    "pl.deliveryText": "Изготовим гравированную металлическую табличку с QR-кодом и пришлём вам.",
+    "pl.choose": "Выбрать",
+
+    "co.title": "Ваш заказ", "co.item": "Расширенная страница без таблички", "co.total": "Итоговая сумма",
+    "co.pay": "Оплатить", "co.card": "Номер карты", "co.expiry": "Срок", "co.cvc": "CVC",
+    "co.paid": "Оплата прошла успешно!", "co.paidText": "Ваша страница теперь расширенная.",
+    "co.cardholder": "Держатель карты",
+
+    "common.soon": "Этот раздел сейчас в разработке.", "common.close": "Закрыть"
   }
 };
