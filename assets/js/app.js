@@ -39,7 +39,14 @@
   /* ---------- render ---------- */
   function renderAvatars() {
     var w = $("#heroAvatars"); if (!w) return; w.innerHTML = "";
-    for (var i = 0; i < 5; i++) w.appendChild(el("span", null, ICON.user));
+    var photos = D.examples.map(function (e) { return e.photo; });
+    var order = [0, 1, 2, 0, 2];
+    for (var i = 0; i < 5; i++) {
+      var s = el("span");
+      s.style.backgroundImage = "url(" + photos[order[i] % photos.length] + ")";
+      s.style.backgroundSize = "cover"; s.style.backgroundPosition = "50% 12%";
+      w.appendChild(s);
+    }
   }
 
   function renderExamples() {
@@ -277,8 +284,15 @@
     if (infoHtml) html += '<div class="block"><div class="block__title">' + t("pub.info") + '</div><div class="info-grid">' + infoHtml + '</div></div>';
     if (bioHtml) html += '<div class="block"><div class="block__title">' + t("pub.bio") + '</div><div class="bio-text">' + bioHtml + '</div></div>';
     if (plan === "extended") {
-      html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div><div class="media-box"><div class="pcard__play">' + ICON.play + '</div></div></div>';
-      html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid"><div></div><div></div><div></div><div></div></div></div>';
+      var vq = (mem && mem.video) ? mem.video : name;
+      var yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent(vq);
+      var poster = photo ? 'background-image:url(' + photo + ');background-size:cover;background-position:50% 18%' : '';
+      html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div>' +
+        '<a class="media-box" href="' + yt + '" target="_blank" rel="noopener" style="' + poster + '"><span class="media-box__ov"></span><div class="pcard__play">' + ICON.play + '</div></a></div>';
+      if (photo) {
+        var tile = '<div style="background-image:url(' + photo + ');background-size:cover;background-position:50% 12%"></div>';
+        html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid">' + tile + '<div></div><div></div><div></div></div></div>';
+      }
     }
     if (grave) html += '<div class="block"><div class="block__title">' + t("pub.grave") + '</div><div class="map-box">' + ICON.pin + '<div class="map-coords">' + grave + (coords ? ' · ' + coords : '') + '</div></div></div>';
     if (wiki) html += '<div class="block"><div class="block__title">' + t("pub.links") + '</div><div class="ext-links">' +
@@ -287,9 +301,11 @@
       '</div></div>';
     html += '<div class="block"><div class="block__title">' + t("pub.qr") + '</div><div class="qr-block">' +
       '<div class="qr-canvas"><img src="' + makeQR(url) + '" alt="QR"></div>' +
-      '<div class="qr-info"><p>' + t("pub.qrHint") + '</p>' +
-        '<button class="btn btn--primary" id="pubShare"><span>' + t("pub.share") + '</span></button></div>' +
-      '</div></div></div>';
+      '<div class="qr-info"><p>' + t("pub.qrHint") + '</p><div class="ed-actions">' +
+        '<button class="btn btn--primary" id="pubShare"><span>' + t("pub.share") + '</span></button>' +
+        (isUser ? '<button class="btn btn--outline" data-route="/editor/' + id + '"><span>' + t("cab.edit") + '</span></button>' +
+                  '<a class="link-arrow" href="#/" data-route="/cabinet"><span>' + t("cab.title") + '</span>' + ICON.chevron + '</a>' : '') +
+      '</div></div></div></div>';
     wrap.innerHTML = html;
     var sb = $("#pubShare"); if (sb) sb.addEventListener("click", function () {
       if (navigator.clipboard) navigator.clipboard.writeText(url);
@@ -306,7 +322,7 @@
       wrap.innerHTML = '<div class="container subpage">' + backLink() +
         '<div class="wizard"><div><div class="form-head"><h1 class="h-section">' + t("cr.title1") + '</h1><div class="step">' + t("cr.step1") + '</div></div>' +
         '<div class="card-box"><div style="display:flex;gap:30px;flex-wrap:wrap;margin-bottom:24px">' +
-          '<label class="upload" id="upBox"><input type="file" accept="image/*" id="upFile" hidden><div class="upload__circle">' + ICON.photo + '</div><span>' + t("cr.photo") + '<br>' + t("cr.add") + '</span></label>' +
+          '<label class="upload" id="upBox"><input type="file" accept="image/*" id="upFile" hidden><span class="upload__inner"><span class="upload__circle">' + ICON.photo + '</span><span>' + t("cr.photo") + '<br>' + t("cr.add") + '</span></span></label>' +
           '<div style="flex:1;min-width:260px"><div class="field"><label>' + t("cr.name") + '</label><input id="fName" type="text" placeholder="' + t("cr.namePh") + '"><div class="field__err"></div></div></div>' +
         '</div>' +
         '<div class="form-grid">' + dateField("fBirth", t("cr.birth")) + dateField("fDeath", t("cr.death")) + '</div>' +
@@ -315,10 +331,15 @@
         '<div class="ed-actions" style="margin-top:28px"><button class="btn btn--primary" id="crNext">' + ICON.plus + '<span>' + t("cr.create") + '</span></button></div>' +
         '</div></div><div class="wizard__bar"><span style="height:20%"></span></div></div></div>';
       var upFile = $("#upFile"), upBox = $("#upBox");
-      upBox.addEventListener("click", function () { upFile.click(); });
+      // label уже открывает диалог по клику — свой click НЕ вешаем (двойной вызов ломал выбор)
       upFile.addEventListener("change", function () {
         var f = upFile.files[0]; if (!f) return; var r = new FileReader();
-        r.onload = function () { state.newPage.photo = r.result; upBox.style.backgroundImage = "url(" + r.result + ")"; upBox.style.backgroundSize = "cover"; upBox.innerHTML = ""; };
+        r.onload = function () {
+          state.newPage.photo = r.result;
+          upBox.style.backgroundImage = "url(" + r.result + ")";
+          upBox.style.backgroundSize = "cover"; upBox.style.backgroundPosition = "50% 14%";
+          upBox.classList.add("has-photo");
+        };
         r.readAsDataURL(f);
       });
       $("#crNext").addEventListener("click", function () {
@@ -337,16 +358,22 @@
         '<div class="field" style="text-align:left"><label>' + t("cr.email") + '</label><input id="lgEmail" type="text" placeholder="name@mail.com"></div>' +
         '<div class="field" style="text-align:left;margin-top:16px"><label>' + t("cr.password") + '</label><input id="lgPass" type="password" placeholder="••••••"></div>' +
         '<button class="btn btn--primary btn--block" id="crLogin" style="margin-top:24px"><span>' + t("cr.loginBtn") + '</span></button>' +
-        '<div class="auth-links"><a href="#" data-route="/create">' + t("cr.register") + '</a><a href="#" data-route="/create">' + t("cr.forgot") + '</a></div>' +
+        '<div class="auth-links"><a href="#" id="crRegister">' + t("cr.register") + '</a><a href="#" id="crForgot">' + t("cr.forgot") + '</a></div>' +
         '</div></div>';
-      $("#crLogin").addEventListener("click", function () {
-        var id = "u_" + getPages().length + "_" + (state.newPage.name || "seite").replace(/\s+/g, "").slice(0, 6).toLowerCase();
-        var page = { id: id, name: state.newPage.name, born: state.newPage.born, died: state.newPage.died,
-          epitaph: state.newPage.epitaph, author: state.newPage.author, photo: state.newPage.photo || null, plan: "short", pub: true };
-        savePage(page); state.newPage = null; state.lastCreated = id;
-        renderCreateSuccess(id); showScreen("create");
-      });
+      $("#crLogin").addEventListener("click", completeCreate);
+      $("#crRegister").addEventListener("click", function (e) { e.preventDefault(); completeCreate(); });
+      var fg = $("#crForgot"); if (fg) fg.addEventListener("click", function (e) { e.preventDefault(); toast(t("common.soon")); });
     }
+  }
+  function completeCreate() {
+    var np = state.newPage || {};
+    var base = (np.name || "seite").toLowerCase().replace(/[^a-z0-9]/gi, "").slice(0, 8) || "seite";
+    var id = "u" + (getPages().length + 1) + base;
+    var page = { id: id, name: np.name || "—", born: np.born || "", died: np.died || "",
+      epitaph: np.epitaph || "", author: np.author || "", photo: np.photo || null, plan: "short", pub: true };
+    savePage(page); state.newPage = null; state.lastCreated = id;
+    toast(t("cr.done"));
+    go("/page/" + id); // сразу показываем созданную страницу
   }
   function renderCreateSuccess(id) {
     $("#screen-create").innerHTML = '<div class="container subpage"><div class="card-box auth-card">' +

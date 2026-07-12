@@ -164,12 +164,23 @@ window.DATA = {
         { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Ehrenbürger der Stadt Wien", ru: "Почётный гражданин Вены" } }
       ],
       bio: {
-        de: ["Ludwig van Beethoven wurde 1770 in Bonn geboren und gilt als einer der bedeutendsten Komponisten der Musikgeschichte. Schon früh zeigte sich sein außergewöhnliches Talent; mit 21 Jahren zog er nach Wien, wo er bei Joseph Haydn studierte und rasch als virtuoser Pianist und Komponist bekannt wurde.",
-             "Trotz eines fortschreitenden Gehörverlusts, der ihn schließlich völlig ertauben ließ, schuf er einige seiner größten Werke – darunter neun Sinfonien, die bis heute weltweit gespielt werden. Sein Schaffen bildet den Übergang von der Klassik zur Romantik. Beethoven starb 1827 in Wien."],
-        ru: ["Людвиг ван Бетховен родился в 1770 году в Бонне и считается одним из величайших композиторов в истории музыки. Его выдающийся талант проявился рано; в 21 год он переехал в Вену, где учился у Йозефа Гайдна и быстро прославился как виртуозный пианист и композитор.",
-             "Несмотря на прогрессирующую глухоту, полностью лишившую его слуха, он создал величайшие произведения — в том числе девять симфоний, которые исполняются во всём мире и сегодня. Его творчество стало переходом от классицизма к романтизму. Бетховен умер в 1827 году в Вене."]
+        de: [
+          "Ludwig van Beethoven wurde im Dezember 1770 in Bonn geboren und in der dortigen Remigiuskirche getauft. Er stammte aus einer Musikerfamilie: Sein Vater, Sänger an der kurfürstlichen Hofkapelle, erkannte früh das Talent des Jungen und unterrichtete ihn – oft mit großer Strenge – am Klavier und auf der Violine. Bereits mit sieben Jahren trat Beethoven öffentlich auf, mit elf wurde er Organist am Bonner Hof.",
+          "1792 ging Beethoven nach Wien, dem musikalischen Zentrum Europas, um bei Joseph Haydn zu studieren. Rasch machte er sich als brillanter Klaviervirtuose und kühner Improvisator einen Namen. In den folgenden Jahren entstanden Werke, die seinen Ruhm begründeten – Klaviersonaten wie die „Pathétique“ und die „Mondscheinsonate“ sowie seine ersten Sinfonien.",
+          "Um 1798 bemerkte Beethoven die ersten Anzeichen seiner Ertaubung – für einen Musiker ein vernichtender Schlag. Im „Heiligenstädter Testament“ von 1802 rang er mit Verzweiflung, fand aber die Kraft weiterzuleben: „Es schien mir unmöglich, die Welt eher zu verlassen, bis ich alles das hervorgebracht, wozu ich mich aufgelegt fühlte.“",
+          "Trotz des zunehmenden Gehörverlusts folgte seine schöpferisch reichste Zeit. Es entstanden die „Eroica“, die 5. und 6. Sinfonie, das Violinkonzert, die Oper „Fidelio“ und zahlreiche Kammermusikwerke. Beethoven sprengte die Formen der Klassik und ebnete den Weg in die Romantik – Musik wurde bei ihm zum Ausdruck von Freiheit und Menschlichkeit.",
+          "Als völlig tauber Komponist schuf er sein visionärstes Werk: die 9. Sinfonie mit dem Chorfinale über Schillers „Ode an die Freude“, heute die Europahymne. Beethoven starb am 26. März 1827 in Wien; zu seinem Begräbnis kamen Zehntausende. Er ruht auf dem Wiener Zentralfriedhof, unweit von Franz Schubert."
+        ],
+        ru: [
+          "Людвиг ван Бетховен родился в декабре 1770 года в Бонне и был крещён в церкви Святого Ремигия. Он происходил из семьи музыкантов: его отец, певец придворной капеллы курфюрста, рано разглядел талант мальчика и — нередко с большой строгостью — обучал его игре на фортепиано и скрипке. Уже в семь лет Бетховен выступал публично, а в одиннадцать стал органистом боннского двора.",
+          "В 1792 году Бетховен переехал в Вену — музыкальный центр Европы, — чтобы учиться у Йозефа Гайдна. Он быстро прославился как блестящий пианист-виртуоз и смелый импровизатор. В последующие годы появились произведения, принёсшие ему славу, — фортепианные сонаты «Патетическая» и «Лунная», а также первые симфонии.",
+          "Около 1798 года Бетховен заметил первые признаки глухоты — для музыканта это был сокрушительный удар. В «Хайлигенштадтском завещании» 1802 года он боролся с отчаянием, но нашёл силы жить дальше: «Мне казалось немыслимым покинуть мир прежде, чем я создам всё, к чему чувствовал себя призванным».",
+          "Несмотря на усиливавшуюся глухоту, наступил самый плодотворный период его творчества. Появились «Героическая», Пятая и Шестая симфонии, скрипичный концерт, опера «Фиделио» и множество камерных сочинений. Бетховен раздвинул рамки классицизма и проложил путь к романтизму — музыка стала у него выражением свободы и человечности.",
+          "Уже совершенно глухим он создал самое визионерское своё произведение — Девятую симфонию с хоровым финалом на слова «Оды к радости» Шиллера, ныне гимн Европы. Бетховен умер 26 марта 1827 года в Вене; на его похороны пришли десятки тысяч людей. Он покоится на Центральном кладбище Вены, недалеко от Франца Шуберта."
+        ]
       },
-      grave: { de: "Zentralfriedhof, Wien", ru: "Центральное кладбище, Вена" }, coords: "48.1516, 16.4415"
+      grave: { de: "Zentralfriedhof, Wien (Ehrengrab)", ru: "Центральное кладбище, Вена (почётная могила)" }, coords: "48.1516, 16.4415",
+      video: "Beethoven Symphony No. 5"
     },
     goethe: {
       wiki: "https://de.wikipedia.org/wiki/Johann_Wolfgang_von_Goethe",
@@ -182,12 +193,23 @@ window.DATA = {
         { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Geheimrat des Herzogtums Weimar", ru: "Тайный советник герцогства Веймар" } }
       ],
       bio: {
-        de: ["Johann Wolfgang von Goethe wurde 1749 in Frankfurt am Main geboren und ist der wohl bekannteste deutsche Dichter. Sein Werk umfasst Lyrik, Dramen und Romane – vom „Werther“ bis zum „Faust“, an dem er über sechzig Jahre arbeitete.",
-             "Goethe war zugleich Naturforscher, Zeichner und Staatsmann am Hof von Weimar, wo er den größten Teil seines Lebens verbrachte. Er prägte die Epoche der Weimarer Klassik und starb 1832 hochgeehrt in Weimar."],
-        ru: ["Иоганн Вольфганг фон Гёте родился в 1749 году во Франкфурте-на-Майне и является, пожалуй, самым известным немецким поэтом. Его наследие включает лирику, драмы и романы — от «Вертера» до «Фауста», над которым он работал более шестидесяти лет.",
-             "Гёте был также натуралистом, художником и государственным деятелем при веймарском дворе, где провёл бо́льшую часть жизни. Он определил эпоху веймарской классики и умер в 1832 году в Веймаре, окружённый почётом."]
+        de: [
+          "Johann Wolfgang von Goethe wurde am 28. August 1749 in Frankfurt am Main in eine wohlhabende Bürgerfamilie geboren. Er erhielt eine umfassende Ausbildung in Sprachen, Naturwissenschaften und Kunst. Auf Wunsch des Vaters studierte er Rechtswissenschaften in Leipzig und Straßburg, doch seine wahre Leidenschaft galt von Anfang an der Dichtung.",
+          "Mit dem Briefroman „Die Leiden des jungen Werthers“ (1774) wurde Goethe über Nacht in ganz Europa berühmt. Das Buch löste ein regelrechtes „Werther-Fieber“ aus und machte ihn zum Wortführer des Sturm und Drang – einer Bewegung, die Gefühl, Natur und Individualität über die Regeln der Vernunft stellte.",
+          "1775 folgte Goethe einer Einladung des jungen Herzogs Carl August nach Weimar, das für den Rest seines Lebens sein Mittelpunkt blieb. Er wurde Minister, leitete Bergbau, Finanzen und das Hoftheater und wurde geadelt. Eine prägende Reise nach Italien (1786–1788) vertiefte seine Hinwendung zur klassischen Antike.",
+          "Gemeinsam mit Friedrich Schiller begründete Goethe die „Weimarer Klassik“, eine Blütezeit der deutschen Literatur. Er schrieb Dramen, Romane und Gedichte von zeitloser Kraft und forschte zugleich als Naturwissenschaftler – über Pflanzen, Farben und Anatomie.",
+          "Sein Lebenswerk aber ist der „Faust“, an dem er über sechzig Jahre arbeitete und den er erst kurz vor seinem Tod vollendete. Goethe starb am 22. März 1832 in Weimar. Er ruht in der Fürstengruft neben Schiller. Bis heute gilt er als der bedeutendste Dichter deutscher Sprache."
+        ],
+        ru: [
+          "Иоганн Вольфганг фон Гёте родился 28 августа 1749 года во Франкфурте-на-Майне в состоятельной бюргерской семье. Он получил разностороннее образование — языки, естественные науки, искусство. По желанию отца изучал право в Лейпциге и Страсбурге, но истинной его страстью с самого начала была поэзия.",
+          "Роман в письмах «Страдания юного Вертера» (1774) в одночасье прославил Гёте на всю Европу. Книга вызвала настоящую «вертеровскую лихорадку» и сделала его знаменем движения «Буря и натиск», ставившего чувство, природу и личность выше правил рассудка.",
+          "В 1775 году Гёте принял приглашение молодого герцога Карла Августа в Веймар, который до конца жизни оставался его центром. Он стал министром, ведал горным делом, финансами и придворным театром, был возведён в дворянство. Определяющее путешествие в Италию (1786–1788) углубило его увлечение классической античностью.",
+          "Вместе с Фридрихом Шиллером Гёте основал «веймарскую классику» — период расцвета немецкой литературы. Он писал драмы, романы и стихи вневременной силы и одновременно занимался естественными науками — растениями, теорией цвета, анатомией.",
+          "Но делом всей его жизни стал «Фауст», над которым он работал более шестидесяти лет и завершил незадолго до смерти. Гёте умер 22 марта 1832 года в Веймаре. Он покоится в Княжеской усыпальнице рядом с Шиллером. По сей день он считается величайшим поэтом на немецком языке."
+        ]
       },
-      grave: { de: "Fürstengruft, Weimar", ru: "Княжеская усыпальница, Веймар" }, coords: "50.9757, 11.3255"
+      grave: { de: "Fürstengruft, Weimar", ru: "Княжеская усыпальница, Веймар" }, coords: "50.9757, 11.3255",
+      video: "Goethe Faust Doku"
     },
     einstein: {
       wiki: "https://de.wikipedia.org/wiki/Albert_Einstein",
@@ -200,12 +222,23 @@ window.DATA = {
         { k: { de: "Auszeichnungen", ru: "Награды" }, v: { de: "Nobelpreis für Physik (1921)", ru: "Нобелевская премия по физике (1921)" } }
       ],
       bio: {
-        de: ["Albert Einstein wurde 1879 in Ulm geboren und zählt zu den bedeutendsten Physikern aller Zeiten. Mit seiner speziellen und allgemeinen Relativitätstheorie veränderte er grundlegend unser Verständnis von Raum, Zeit und Gravitation.",
-             "1921 erhielt er den Nobelpreis für Physik. Als überzeugter Pazifist und Humanist emigrierte er 1933 in die USA, wo er bis zu seinem Tod 1955 in Princeton forschte und lehrte."],
-        ru: ["Альберт Эйнштейн родился в 1879 году в Ульме и входит в число величайших физиков всех времён. Своими специальной и общей теориями относительности он коренным образом изменил наше понимание пространства, времени и гравитации.",
-             "В 1921 году он получил Нобелевскую премию по физике. Убеждённый пацифист и гуманист, в 1933 году он эмигрировал в США, где до самой смерти в 1955 году работал и преподавал в Принстоне."]
+        de: [
+          "Albert Einstein wurde am 14. März 1879 in Ulm geboren und wuchs in München auf. Als Kind galt er keineswegs als Wunderkind, entwickelte aber früh eine tiefe Neugier für Mathematik und Physik. Er studierte am Polytechnikum in Zürich und nahm die Schweizer Staatsbürgerschaft an.",
+          "Da er zunächst keine Anstellung als Wissenschaftler fand, arbeitete Einstein am Patentamt in Bern. In seiner Freizeit entwickelte er dort seine revolutionären Ideen. 1905, in seinem „Wunderjahr“, veröffentlichte er vier Aufsätze, die die Physik für immer veränderten – darunter die spezielle Relativitätstheorie und die berühmte Formel E = mc².",
+          "1915 vollendete Einstein die allgemeine Relativitätstheorie, die Gravitation als Krümmung von Raum und Zeit beschreibt. Als 1919 eine Sonnenfinsternis seine Vorhersagen bestätigte, wurde er weltberühmt. 1921 erhielt er den Nobelpreis für Physik.",
+          "Als überzeugter Pazifist, Humanist und Jude musste Einstein nach der Machtübernahme der Nationalsozialisten 1933 Deutschland verlassen. Er emigrierte in die USA und wirkte fortan am Institute for Advanced Study in Princeton. Zeitlebens setzte er sich für Frieden und Völkerverständigung ein.",
+          "Einstein blieb bis zuletzt ein Suchender, der nach einer einheitlichen Theorie der Naturkräfte strebte. Er starb am 18. April 1955 in Princeton. Seinem Wunsch entsprechend wurde er eingeäschert und die Asche an einem unbekannten Ort verstreut. Sein Name ist bis heute ein Synonym für Genie."
+        ],
+        ru: [
+          "Альберт Эйнштейн родился 14 марта 1879 года в Ульме и вырос в Мюнхене. В детстве он вовсе не считался вундеркиндом, но рано проявил глубокую любознательность к математике и физике. Он учился в Политехникуме в Цюрихе и принял швейцарское гражданство.",
+          "Не найдя поначалу места учёного, Эйнштейн работал в патентном бюро в Берне. В свободное время он развивал там свои революционные идеи. В 1905 году, в свой «год чудес», он опубликовал четыре статьи, навсегда изменившие физику, — в том числе специальную теорию относительности и знаменитую формулу E = mc².",
+          "В 1915 году Эйнштейн завершил общую теорию относительности, описывающую гравитацию как искривление пространства и времени. Когда в 1919 году солнечное затмение подтвердило его предсказания, он стал всемирно знаменит. В 1921 году он получил Нобелевскую премию по физике.",
+          "Убеждённый пацифист, гуманист и еврей, Эйнштейн после прихода к власти нацистов в 1933 году был вынужден покинуть Германию. Он эмигрировал в США и работал в Институте перспективных исследований в Принстоне. Всю жизнь он выступал за мир и взаимопонимание народов.",
+          "Эйнштейн до конца оставался ищущим, стремившимся к единой теории сил природы. Он умер 18 апреля 1955 года в Принстоне. По его желанию он был кремирован, а прах развеян в неизвестном месте. Его имя и сегодня — синоним гения."
+        ]
       },
-      grave: { de: "Asche verstreut, Princeton", ru: "Прах развеян, Принстон" }, coords: "40.3487, 74.6590"
+      grave: { de: "Eingeäschert, Princeton, USA", ru: "Кремирован, Принстон, США" }, coords: "40.3487, -74.6590",
+      video: "Albert Einstein original footage"
     }
   },
 
