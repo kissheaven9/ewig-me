@@ -284,17 +284,22 @@
     if (infoHtml) html += '<div class="block"><div class="block__title">' + t("pub.info") + '</div><div class="info-grid">' + infoHtml + '</div></div>';
     if (bioHtml) html += '<div class="block"><div class="block__title">' + t("pub.bio") + '</div><div class="bio-text">' + bioHtml + '</div></div>';
     if (plan === "extended") {
-      var vq = (mem && mem.video) ? mem.video : name;
-      var yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent(vq);
-      var poster = photo ? 'background-image:url(' + photo + ');background-size:cover;background-position:50% 18%' : '';
-      html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div>' +
-        '<a class="media-box" href="' + yt + '" target="_blank" rel="noopener" style="' + poster + '"><span class="media-box__ov"></span><div class="pcard__play">' + ICON.play + '</div></a></div>';
-      if (photo) {
-        var tile = '<div style="background-image:url(' + photo + ');background-size:cover;background-position:50% 12%"></div>';
-        html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid">' + tile + '<div></div><div></div><div></div></div></div>';
+      if (mem && mem.video) {
+        html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div>' +
+          '<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/' + mem.video + '" title="Video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>';
+      }
+      var gal = (mem && mem.gallery && mem.gallery.length) ? mem.gallery : (photo ? [photo] : []);
+      if (gal.length) {
+        var tiles = gal.map(function (g) { return '<div style="background-image:url(' + g + ');background-size:cover;background-position:50% 12%"></div>'; }).join("");
+        html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid">' + tiles + '</div></div>';
       }
     }
-    if (grave) html += '<div class="block"><div class="block__title">' + t("pub.grave") + '</div><div class="map-box">' + ICON.pin + '<div class="map-coords">' + grave + (coords ? ' · ' + coords : '') + '</div></div></div>';
+    if (grave) {
+      var mapInner = coords
+        ? '<div class="map-embed"><iframe src="https://maps.google.com/maps?q=' + encodeURIComponent(coords) + '&z=13&output=embed" loading="lazy"></iframe><div class="map-coords">' + grave + ' · ' + coords + '</div></div>'
+        : '<div class="map-box">' + ICON.pin + '<div class="map-coords">' + grave + '</div></div>';
+      html += '<div class="block"><div class="block__title">' + t("pub.grave") + '</div>' + mapInner + '</div>';
+    }
     if (wiki) html += '<div class="block"><div class="block__title">' + t("pub.links") + '</div><div class="ext-links">' +
       '<a href="' + wiki + '" target="_blank" rel="noopener" aria-label="Wikipedia"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h3l3 9 3-9h2l3 9 3-9h2l-4.5 14h-2L15 10l-3.5 9h-2L5 5z"/></svg></a>' +
       '<a href="#" aria-label="Teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.1 10.9l7.8-3.8M8.1 13.1l7.8 3.8"/></svg></a>' +
@@ -516,8 +521,7 @@
       '<div class="field" style="margin-top:16px"><label>' + t("co.cardholder") + '</label><input id="ccName" type="text" placeholder="Max Mustermann"></div>' +
       '<button class="btn btn--primary btn--block" id="payBtn" style="margin-top:24px"><span>' + t("co.pay") + ' 69 €</span></button></div></div>';
     $("#payBtn").addEventListener("click", function () {
-      var num = ($("#ccNum").value || "").replace(/\s/g, "");
-      if (num.length < 12) { $("#ccNum").parentNode.classList.add("is-invalid"); $("#ccNum").parentNode.querySelector(".field__err").textContent = "!"; return; }
+      // демо-режим: пропускаем без проверки карты, чтобы можно было протестировать флоу
       if (id && findPage(id)) updatePage(id, { plan: "extended" });
       openModal('<button class="modal__close" data-x>' + ICON.close + '</button><div class="upload__circle" style="margin:0 auto 16px;width:64px;height:64px">' + ICON.check + '</div>' +
         '<h3 class="modal__title" style="text-align:center">' + t("co.paid") + '</h3><p style="text-align:center;color:var(--ink-body)">' + t("co.paidText") + '</p>' +

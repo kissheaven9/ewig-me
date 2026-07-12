@@ -324,6 +324,10 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .info-cell dd { margin: 0; font-size: 15px; color: var(--ink-body); }
 .bio-text p { font-size: 15px; color: var(--ink-body); margin: 0 0 16px; line-height: 1.6; }
 .media-box { aspect-ratio: 16/8; border-radius: 14px; background: linear-gradient(135deg,#e7dacd,#cdb6a0); position: relative; display: grid; place-items: center; overflow: hidden; }
+.video-embed { aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-card); }
+.video-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
+.map-embed { position: relative; aspect-ratio: 16/7; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-card); }
+.map-embed iframe { width: 100%; height: 100%; border: 0; display: block; filter: grayscale(.15) sepia(.08); }
 .media-box__ov { position: absolute; inset: 0; background: rgba(45,35,28,.28); transition: background .2s; }
 .media-box:hover .media-box__ov { background: rgba(45,35,28,.15); }
 .media-box .pcard__play { position: relative; z-index: 2; }

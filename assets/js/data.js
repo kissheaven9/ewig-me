@@ -180,7 +180,8 @@ window.DATA = {
         ]
       },
       grave: { de: "Zentralfriedhof, Wien (Ehrengrab)", ru: "Центральное кладбище, Вена (почётная могила)" }, coords: "48.1516, 16.4415",
-      video: "Beethoven Symphony No. 5"
+      video: "7KKs8_znA2Y",
+      gallery: ["assets/img/person-beethoven.jpg", "assets/img/beethoven-g2.jpg", "assets/img/beethoven-g4.jpg", "assets/img/beethoven-g1.jpg"]
     },
     goethe: {
       wiki: "https://de.wikipedia.org/wiki/Johann_Wolfgang_von_Goethe",
@@ -209,7 +210,8 @@ window.DATA = {
         ]
       },
       grave: { de: "Fürstengruft, Weimar", ru: "Княжеская усыпальница, Веймар" }, coords: "50.9757, 11.3255",
-      video: "Goethe Faust Doku"
+      video: "skJHH2zmdOs",
+      gallery: ["assets/img/person-goethe.jpg", "assets/img/goethe-g3.jpg", "assets/img/goethe-g2.jpg", "assets/img/goethe-g4.jpg"]
     },
     einstein: {
       wiki: "https://de.wikipedia.org/wiki/Albert_Einstein",
@@ -238,7 +240,8 @@ window.DATA = {
         ]
       },
       grave: { de: "Eingeäschert, Princeton, USA", ru: "Кремирован, Принстон, США" }, coords: "40.3487, -74.6590",
-      video: "Albert Einstein original footage"
+      video: "d6tJNfK4Tlw",
+      gallery: ["assets/img/person-einstein.jpg", "assets/img/einstein-g1.jpg", "assets/img/einstein-g2.jpg", "assets/img/einstein-g3.jpg"]
     }
   },
 
