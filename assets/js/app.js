@@ -80,7 +80,7 @@
       '<div class="teaser__top">' +
         '<div><button class="btn-refresh btn-refresh--muted" id="teaserAnother">' +
           '<span class="btn-refresh__ic">' + ICON.refresh + '</span>' +
-          '<span class="btn-refresh__txt">' + t("teaser.another") + '</span></button></div>' +
+          '<span class="btn-refresh__txt">' + t("teaser.another").split("%n").join(pageCount()) + '</span></button></div>' +
         '<div class="teaser__photo"><img src="' + p.photo + '" alt="' + L(p.name) + '"></div>' +
         '<div class="teaser__quote">' + L(p.quote) + '</div>' +
       '</div>' +
@@ -183,8 +183,11 @@
   }
 
   /* ---------- i18n static ---------- */
+  function pageCount() { return (D.examples ? D.examples.length : 0) + getPages().length; }
   function applyI18n() {
-    $all("[data-i18n]").forEach(function (n) { var v = t(n.getAttribute("data-i18n")); if (v) n.textContent = v; });
+    var cnt = pageCount();
+    $all("[data-i18n]").forEach(function (n) { var v = t(n.getAttribute("data-i18n")); if (v) n.textContent = v.split("%n").join(cnt); });
+    var c = $(".counter__num"); if (c) c.textContent = cnt;
     $all("[data-i18n-ph]").forEach(function (n) { var v = t(n.getAttribute("data-i18n-ph")); if (v) n.setAttribute("placeholder", v); });
     document.documentElement.lang = state.lang;
   }
@@ -408,45 +411,125 @@
   }
 
   /* ---------- EDITOR ---------- */
+  function esc(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+  function ytId(url) { var m = String(url || "").match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : ""; }
+  function esec(title, inner) { return '<div class="ed-section"><div class="ed-section__head"><div class="ed-section__title">' + title + '</div></div>' + inner + '</div>'; }
+
+  function editorPhotos(page) {
+    var tiles = (page.photos || []).map(function (p, i) {
+      return '<div class="ph-tile" style="background-image:url(' + p + ')"><button class="ph-del" data-delphoto="' + i + '" title="löschen">' + ICON.close + '</button></div>';
+    }).join("");
+    return '<div class="ph-grid">' + tiles + '<label class="ph-add"><input type="file" accept="image/*" multiple id="edPhotoFile" hidden>' + ICON.plus + '</label></div>';
+  }
+  function editorVideos(page) {
+    var rows = (page.videos || []).map(function (v, i) {
+      return '<div class="row-item"><input type="text" data-vid="' + i + '" value="' + esc(v) + '" placeholder="https://youtube.com/watch?v=…"><button class="row-del" data-delvid="' + i + '">' + ICON.close + '</button></div>';
+    }).join("");
+    return rows + '<button class="btn btn--outline btn--sm" id="edAddVideo" style="margin-top:12px">' + ICON.plus + '<span>' + t("ed.addVideo") + '</span></button>';
+  }
+  function editorLinks(page) {
+    var rows = (page.links || []).map(function (l, i) {
+      return '<div class="row-item row-item--2"><input data-lurl="' + i + '" value="' + esc(l.url) + '" placeholder="https://…"><input data-lname="' + i + '" value="' + esc(l.name) + '" placeholder="' + t("ed.linkName") + '"><button class="row-del" data-dellink="' + i + '">' + ICON.close + '</button></div>';
+    }).join("");
+    return rows + '<button class="btn btn--outline btn--sm" id="edAddLink" style="margin-top:12px">' + ICON.plus + '<span>' + t("ed.addMore") + '</span></button>';
+  }
+
+  function editorPreview(page) {
+    var photo = (page.photos && page.photos[0]) || page.photo;
+    var vid = "", i;
+    for (i = 0; i < (page.videos || []).length; i++) { vid = ytId(page.videos[i]); if (vid) break; }
+    var info = [page.birthplace, page.job].filter(Boolean).join(" · ");
+    var gal = (page.photos || []).slice(0, 6).map(function (p) { return '<div style="background-image:url(' + p + ')"></div>'; }).join("");
+    var links = (page.links || []).filter(function (l) { return l.url || l.name; }).map(function (l) { return '<span class="pv-link">' + esc(l.name || l.url) + '</span>'; }).join("");
+    return '<div class="pv">' +
+      (photo ? '<div class="pv-photo"><img src="' + photo + '"></div>' : '<div class="pv-photo pv-photo--empty">' + portrait(page.name || "") + '</div>') +
+      '<div class="pv-name">' + esc(page.name || "—") + '</div>' +
+      '<div class="pv-dates">' + esc(page.born || "") + " – " + esc(page.died || "") + '</div>' +
+      (page.epitaph ? '<div class="pv-epi">«' + esc(page.epitaph) + '»</div>' : '') +
+      (info ? '<div class="pv-sub">' + t("pub.info") + '</div><div class="pv-info">' + esc(info) + '</div>' : '') +
+      (page.bio ? '<div class="pv-sub">' + t("pub.bio") + '</div><div class="pv-bio">' + esc(page.bio) + '</div>' : '') +
+      (gal ? '<div class="pv-sub">' + t("pub.photos") + '</div><div class="pv-gal">' + gal + '</div>' : '') +
+      (vid ? '<div class="pv-sub">' + t("pub.media") + '</div><div class="pv-video" style="background-image:url(https://img.youtube.com/vi/' + vid + '/mqdefault.jpg)"><span class="pv-play">' + ICON.play + '</span></div>' : '') +
+      (links ? '<div class="pv-sub">' + t("pub.links") + '</div><div class="pv-links">' + links + '</div>' : '') +
+      '</div>';
+  }
+  function updatePreview() { var b = $("#previewBody"); if (b && state.editing) b.innerHTML = editorPreview(state.editing); }
+
   function renderEditor(id) {
-    var page = findPage(id); var wrap = $("#screen-editor");
+    var wrap = $("#screen-editor");
+    var page = (state.editing && state.editing.id === id) ? state.editing : findPage(id);
     if (!page) { wrap.innerHTML = '<div class="container subpage">' + backLink() + '<p>' + t("common.soon") + '</p></div>'; return; }
-    var ext = page.plan === "extended";
-    function lockedSection(title) {
-      return '<div class="ed-section"><div class="ed-locked__overlay"><div class="ed-locked__msg">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' +
-        '<span><b style="text-transform:uppercase;font-weight:400;color:var(--ink-head)">' + title + '</b> — ' + t("ed.locked") + '</span></div>' +
-        '<button class="btn btn--primary btn--sm" data-route="/plaque/' + id + '"><span>' + t("ed.buy") + '</span></button></div></div>';
-    }
-    function openSection(title, inner) { return '<div class="ed-section"><div class="ed-section__head"><div class="ed-section__title">' + title + '</div></div>' + inner + '</div>'; }
-    var html = '<div class="container subpage">' + backLink() +
-      '<h1 class="h-section" style="margin-bottom:8px">' + t(ext ? "ed.titleExt" : "ed.titleShort") + '</h1>' +
-      '<p style="color:var(--ink-soft);font-size:14px;margin-bottom:28px">' + t("ed.avgTime") + '</p>';
-    if (ext) {
-      html += openSection(t("ed.bio"),
-        '<div class="bio-choice"><button class="btn btn--outline"><span>' + t("ed.bioSelf") + '</span></button>' +
-        '<button class="btn btn--primary" data-route="/ai/' + id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span>' + t("ed.bioAI") + '</span></button></div>' +
-        '<textarea style="margin-top:16px;min-height:140px" placeholder="…"></textarea>');
-      html += openSection(t("ed.photos"), '<p style="font-size:14px;color:var(--ink-body);margin-bottom:14px">' + t("ed.photosHint") + '</p><button class="btn btn--outline"><span>' + t("ed.addPhoto") + '</span></button>');
-    } else {
-      html += lockedSection(t("ed.bio")) + lockedSection(t("pub.media")) + lockedSection(t("ed.photos")) + lockedSection(t("ed.links"));
-    }
-    html += openSection(t("ed.grave"),
-      '<div class="form-grid"><div class="field"><label>' + t("ed.cemetery") + '</label><input type="text" value="' + (page.cemetery || "") + '" id="edCem"></div>' +
-      '<div class="field"><label>' + t("ed.coords") + '</label><input type="text" value="' + (page.coords || "") + '" id="edCoords" placeholder="48.15, 16.44"></div></div>');
-    html += openSection(t("ed.qr"),
-      '<div class="qr-block" style="margin-bottom:20px"><div class="qr-canvas" style="width:130px;height:130px"><img src="' + makeQR(location.origin + location.pathname + "#/page/" + id) + '"></div>' +
-      '<div style="flex:1;min-width:220px">' +
-      toggleRow("edPub", t("ed.public"), page.pub !== false) +
-      toggleRow("edIdx", t("ed.index"), true) +
-      toggleRow("edPubl", t("ed.publish"), true) + '</div></div>');
-    html += '<div class="ed-actions"><button class="btn btn--primary" id="edSave"><span>' + t("ed.save") + '</span></button>' +
-      '<a class="link-arrow" href="#/page/' + id + '" data-route="/page/' + id + '"><span>' + t("ed.preview") + '</span>' + ICON.chevron + '</a></div></div>';
-    wrap.innerHTML = html;
-    $("#edSave").addEventListener("click", function () {
-      updatePage(id, { cemetery: ($("#edCem") || {}).value || "", coords: ($("#edCoords") || {}).value || "", pub: $("#edPub").checked });
-      toast(t("ed.saved"));
+    page.photos = page.photos || (page.photo ? [page.photo] : []);
+    page.videos = page.videos || [];
+    page.links = page.links || [];
+    state.editing = page;
+
+    var form = esec(t("ed.info"),
+        '<div class="field"><label>' + t("cr.name") + '</label><input id="edName" value="' + esc(page.name) + '"></div>' +
+        '<div class="form-grid" style="margin-top:16px"><div class="field"><label>' + t("cr.birth") + '</label><input id="edBorn" value="' + esc(page.born) + '" placeholder="1948"></div>' +
+        '<div class="field"><label>' + t("cr.death") + '</label><input id="edDied" value="' + esc(page.died) + '" placeholder="2021"></div></div>' +
+        '<div class="form-grid" style="margin-top:16px"><div class="field"><label>' + t("ed.birthplace") + '</label><input id="edBirthplace" value="' + esc(page.birthplace) + '"></div>' +
+        '<div class="field"><label>' + t("ed.job") + '</label><input id="edJob" value="' + esc(page.job) + '"></div></div>' +
+        '<div class="field" style="margin-top:16px"><label>' + t("cr.epitaph") + '</label><textarea id="edEpitaph">' + esc(page.epitaph) + '</textarea></div>') +
+      esec(t("ed.bio"),
+        '<div class="bio-choice"><button class="btn btn--outline btn--sm is-on"><span>' + t("ed.bioSelf") + '</span></button>' +
+        '<button class="btn btn--primary btn--sm" data-route="/ai/' + id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span>' + t("ed.bioAI") + '</span></button></div>' +
+        '<div class="field" style="margin-top:16px"><textarea id="edBio" style="min-height:150px" placeholder="' + t("ed.bioPh") + '">' + esc(page.bio) + '</textarea></div>') +
+      esec(t("ed.photos"), '<p class="ed-hint">' + t("ed.photosHint") + '</p>' + editorPhotos(page)) +
+      esec(t("ed.media"), '<p class="ed-hint">' + t("ed.videoHint") + '</p><div id="edVideos">' + editorVideos(page) + '</div>') +
+      esec(t("ed.links"), '<div id="edLinks">' + editorLinks(page) + '</div>') +
+      esec(t("ed.grave"),
+        '<div class="form-grid"><div class="field"><label>' + t("ed.cemetery") + '</label><input id="edCem" value="' + esc(page.cemetery) + '"></div>' +
+        '<div class="field"><label>' + t("ed.coords") + '</label><input id="edCoords" value="' + esc(page.coords) + '" placeholder="48.15, 16.44"></div></div>') +
+      esec(t("ed.qr"),
+        '<div class="qr-block"><div class="qr-canvas" style="width:120px;height:120px"><img src="' + makeQR(location.origin + location.pathname + "#/page/" + id) + '"></div>' +
+        '<div style="flex:1;min-width:200px">' + toggleRow("edPub", t("ed.public"), page.pub !== false) + toggleRow("edIdx", t("ed.index"), true) + toggleRow("edPubl", t("ed.publish"), true) + '</div></div>') +
+      '<div class="ed-actions"><button class="btn btn--primary" id="edSave"><span>' + t("ed.save") + '</span></button>' +
+      '<a class="link-arrow" href="#/page/' + id + '" data-route="/page/' + id + '"><span>' + t("ed.preview") + '</span>' + ICON.chevron + '</a></div>';
+
+    wrap.innerHTML = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:6px">' + t("ed.titleExt") + '</h1>' +
+      '<p style="color:var(--ink-soft);font-size:14px;margin-bottom:26px">' + t("ed.avgTime") + '</p>' +
+      '<div class="editor-split"><div class="editor-form">' + form + '</div>' +
+      '<div class="editor-preview"><div class="preview-label">' + t("ed.livePreview") + '</div><div class="phone"><div class="phone__scroll"><div id="previewBody"></div></div></div></div></div></div>';
+    bindEditor(id);
+    updatePreview();
+  }
+
+  function bindEditor(id) {
+    var p = state.editing;
+    function live(sel, key) { var e = $(sel); if (e) e.addEventListener("input", function () { p[key] = e.value; updatePreview(); }); }
+    live("#edName", "name"); live("#edBorn", "born"); live("#edDied", "died");
+    live("#edBirthplace", "birthplace"); live("#edJob", "job"); live("#edEpitaph", "epitaph"); live("#edBio", "bio");
+    live("#edCem", "cemetery"); live("#edCoords", "coords");
+    // фото: добавить
+    var pf = $("#edPhotoFile");
+    if (pf) pf.addEventListener("change", function () {
+      var files = Array.prototype.slice.call(pf.files), left = files.length;
+      files.forEach(function (f) {
+        var r = new FileReader();
+        r.onload = function () { p.photos.push(r.result); if (--left === 0) { persistEditor(id); renderEditor(id); } };
+        r.readAsDataURL(f);
+      });
     });
+    // фото: удалить
+    $all("[data-delphoto]").forEach(function (b) { b.addEventListener("click", function () { p.photos.splice(+b.getAttribute("data-delphoto"), 1); persistEditor(id); renderEditor(id); }); });
+    // видео
+    var av = $("#edAddVideo"); if (av) av.addEventListener("click", function () { p.videos.push(""); persistEditor(id); renderEditor(id); });
+    $all("[data-vid]").forEach(function (i) { i.addEventListener("input", function () { p.videos[+i.getAttribute("data-vid")] = i.value; updatePreview(); }); });
+    $all("[data-delvid]").forEach(function (b) { b.addEventListener("click", function () { p.videos.splice(+b.getAttribute("data-delvid"), 1); persistEditor(id); renderEditor(id); }); });
+    // ссылки
+    var al = $("#edAddLink"); if (al) al.addEventListener("click", function () { p.links.push({ url: "", name: "" }); persistEditor(id); renderEditor(id); });
+    $all("[data-lurl]").forEach(function (i) { i.addEventListener("input", function () { p.links[+i.getAttribute("data-lurl")].url = i.value; updatePreview(); }); });
+    $all("[data-lname]").forEach(function (i) { i.addEventListener("input", function () { p.links[+i.getAttribute("data-lname")].name = i.value; updatePreview(); }); });
+    $all("[data-dellink]").forEach(function (b) { b.addEventListener("click", function () { p.links.splice(+b.getAttribute("data-dellink"), 1); persistEditor(id); renderEditor(id); }); });
+    // сохранить
+    var sv = $("#edSave"); if (sv) sv.addEventListener("click", function () { p.pub = $("#edPub").checked; persistEditor(id); toast(t("ed.saved")); });
+  }
+  function persistEditor(id) {
+    var p = state.editing; if (!p) return;
+    p.photo = (p.photos && p.photos[0]) || p.photo || null; // главное фото = первое
+    updatePage(id, p);
   }
   function toggleRow(id, label, on) {
     return '<div class="toggle-row"><span>' + label + '</span><label class="toggle"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + '><span class="toggle__track"></span></label></div>';

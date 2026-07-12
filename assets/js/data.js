@@ -181,7 +181,7 @@ window.DATA = {
       },
       grave: { de: "Zentralfriedhof, Wien (Ehrengrab)", ru: "Центральное кладбище, Вена (почётная могила)" }, coords: "48.1516, 16.4415",
       video: "7KKs8_znA2Y",
-      gallery: ["assets/img/person-beethoven.jpg", "assets/img/beethoven-g2.jpg", "assets/img/beethoven-g4.jpg", "assets/img/beethoven-g1.jpg"]
+      gallery: ["assets/img/person-beethoven.jpg", "assets/img/beethoven-g1.jpg", "assets/img/beethoven-g3.jpg", "assets/img/beethoven-g4.jpg"]
     },
     goethe: {
       wiki: "https://de.wikipedia.org/wiki/Johann_Wolfgang_von_Goethe",

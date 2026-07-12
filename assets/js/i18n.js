@@ -29,7 +29,7 @@ window.I18N = {
 
     "how.title": "Erinnerungen teilen ist einfach",
 
-    "teaser.another": "Weiteres Beispiel zeigen – aus 1203 Seiten",
+    "teaser.another": "Weiteres Beispiel zeigen – aus %n Seiten",
     "teaser.viewPage": "Seite ansehen",
     "teaser.years": "Lebensjahre",
 
@@ -51,7 +51,7 @@ window.I18N = {
     "press.title": "Man spricht über uns",
 
     "stories.title": "Lebendige Geschichten",
-    "stories.more": "Weitere Geschichten zeigen – aus 1203 Geschichten",
+    "stories.more": "Weitere Geschichten zeigen – aus %n Geschichten",
 
     "footer.prices": "Preise",
     "footer.examples": "Beispielseiten",
@@ -92,6 +92,10 @@ window.I18N = {
     "ed.qr": "QR-Code dieser Seite", "ed.public": "Öffentlich", "ed.index": "Indexieren",
     "ed.publish": "Veröffentlichen", "ed.save": "Änderungen speichern", "ed.preview": "Vorschau",
     "ed.saved": "Änderungen gespeichert",
+    "ed.birthplace": "Geburtsort", "ed.job": "Beruf / Tätigkeit",
+    "ed.bioPh": "Erzählen Sie die Lebensgeschichte …",
+    "ed.addVideo": "Video hinzufügen", "ed.videoHint": "Fügen Sie YouTube-Links hinzu.",
+    "ed.linkName": "Bezeichnung", "ed.livePreview": "Live-Vorschau",
 
     "ai.title": "Biografie mit KI-Assistent erstellen", "ai.question": "Frage", "ai.of": "von",
     "ai.next": "Nächste Frage", "ai.generate": "Biografie generieren", "ai.answerPh": "Schreiben Sie Ihre Antwort …",
@@ -143,7 +147,7 @@ window.I18N = {
 
     "how.title": "Делиться воспоминаниями просто",
 
-    "teaser.another": "Показать другой пример — из 1203 страниц",
+    "teaser.another": "Показать другой пример — из %n страниц",
     "teaser.viewPage": "Смотреть страницу",
     "teaser.years": "лет жизни",
 
@@ -165,7 +169,7 @@ window.I18N = {
     "press.title": "О нас говорят",
 
     "stories.title": "Живые истории",
-    "stories.more": "Показать другие истории — из 1203 историй",
+    "stories.more": "Показать другие истории — из %n историй",
 
     "footer.prices": "Цены",
     "footer.examples": "Примеры страниц",
@@ -206,6 +210,10 @@ window.I18N = {
     "ed.qr": "QR-код этой страницы", "ed.public": "Доступно для всех", "ed.index": "Индексировать",
     "ed.publish": "Публиковать", "ed.save": "Сохранить изменения", "ed.preview": "Предпросмотр",
     "ed.saved": "Изменения сохранены",
+    "ed.birthplace": "Место рождения", "ed.job": "Род деятельности",
+    "ed.bioPh": "Расскажите историю жизни…",
+    "ed.addVideo": "Добавить видео", "ed.videoHint": "Добавьте ссылки на YouTube.",
+    "ed.linkName": "Название", "ed.livePreview": "Живой предпросмотр",
 
     "ai.title": "Создание биографии с ИИ-помощником", "ai.question": "Вопрос", "ai.of": "из",
     "ai.next": "Следующий вопрос", "ai.generate": "Сгенерировать биографию", "ai.answerPh": "Напишите ваш ответ…",
