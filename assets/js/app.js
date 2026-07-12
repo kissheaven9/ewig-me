@@ -241,8 +241,15 @@
   }
 
   /* ---------- localStorage pages ---------- */
-  function getPages() { try { return JSON.parse(localStorage.getItem("ewig_pages") || "[]"); } catch (e) { return []; } }
-  function setPages(a) { localStorage.setItem("ewig_pages", JSON.stringify(a)); }
+  var memPages = null; // фолбэк, если localStorage недоступен (приватный режим/блокировка)
+  function getPages() {
+    if (memPages) return memPages.slice();
+    try { return JSON.parse(localStorage.getItem("ewig_pages") || "[]"); } catch (e) { return memPages || []; }
+  }
+  function setPages(a) {
+    memPages = a.slice();
+    try { localStorage.setItem("ewig_pages", JSON.stringify(a)); } catch (e) { /* приватный режим — держим в памяти */ }
+  }
   function savePage(p) { var a = getPages(); a.push(p); setPages(a); }
   function updatePage(id, patch) { var a = getPages().map(function (x) { return x.id === id ? Object.assign(x, patch) : x; }); setPages(a); }
   function findPage(id) { var u = getPages().filter(function (x) { return x.id === id; })[0]; return u || null; }
