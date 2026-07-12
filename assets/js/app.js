@@ -1,172 +1,138 @@
 /* ==========================================================================
-   ewig.me — app.js
-   Лендинг: i18n-переключатель, рендер секций, аккордеон, reveal, модалки,
-   роутер-скелет. Публичная страница/мастер/редактор — следующие итерации.
+   ewig.me — app.js. Рендер лендинга ТОЧНО по Figma, i18n DE/RU, refresh-кнопки.
    ========================================================================== */
 (function () {
   "use strict";
-
   var LANG_KEY = "ewig_lang";
   var urlLang = (new URLSearchParams(location.search)).get("lang");
-  var state = { lang: (urlLang === "de" || urlLang === "ru") ? urlLang : (localStorage.getItem(LANG_KEY) || "de") };
+  var state = { lang: (urlLang === "de" || urlLang === "ru") ? urlLang : (localStorage.getItem(LANG_KEY) || "de"), teaserIdx: 0 };
   var D = window.DATA, I = window.I18N;
 
-  /* -------- helpers -------- */
-  function $(sel, ctx) { return (ctx || document).querySelector(sel); }
-  function $all(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
-  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
-  function t(key) { var d = I[state.lang]; return (d && d[key] != null) ? d[key] : (I.de[key] || key); }
-  function L(obj) { if (!obj) return ""; return obj[state.lang] != null ? obj[state.lang] : (obj.de || ""); }
+  function $(s, c) { return (c || document).querySelector(s); }
+  function $all(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+  function el(t, cls, html) { var e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function t(k) { var d = I[state.lang]; return (d && d[k] != null) ? d[k] : (I.de[k] || k); }
+  function L(o) { if (!o) return ""; return o[state.lang] != null ? o[state.lang] : (o.de || ""); }
 
-  /* -------- icons -------- */
   var ICON = {
     chevron: '<svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>',
-    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="15" height="14" rx="3"/><path d="M17 10l5-3v10l-5-3z"/></svg>',
-    photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M4 18l5-4 4 3 3-2 4 3"/></svg>',
-    text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 6h14M5 10h14M5 14h9M5 18h9" stroke-linecap="round"/></svg>',
-    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
-    register: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
-    fill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke-linecap="round"/></svg>',
-    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg>',
-    expand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 3h16v18H4z"/><path d="M9 8h6M9 12h6M9 16h4" stroke-linecap="round"/></svg>'
+    photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="13" rx="2.5"/><circle cx="8.5" cy="11" r="1.8"/><path d="M4 18l5-4 3.5 2.5L16 13l4 4" stroke-linejoin="round"/><path d="M9 6l1.5-2h3L15 6" stroke-linejoin="round"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+    bubble: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v11H8l-4 3z" stroke-linejoin="round"/></svg>',
+    qr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-7v-3" stroke-linecap="round"/></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>'
   };
-  var STEP_ICONS = [ICON.register, ICON.fill, ICON.share, ICON.expand];
 
-  /* нейтральный портрет-плейсхолдер (тактично, без лиц; заменяется реальным фото) */
-  function portrait(name) {
-    var initials = (name || "").trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase();
-    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">' +
-      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe6dc"/><stop offset="1" stop-color="#ddccbc"/></linearGradient></defs>' +
-      '<rect width="200" height="200" fill="url(#g)"/>' +
-      '<circle cx="100" cy="82" r="34" fill="#fff" opacity=".55"/>' +
-      '<path d="M46 168c0-30 24-46 54-46s54 16 54 46z" fill="#fff" opacity=".55"/>' +
-      '<text x="100" y="112" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="30" font-weight="600" fill="#bb9174" opacity=".9">' + initials + '</text>' +
-      '</svg>';
-  }
-
-  /* -------- render: landing sections -------- */
+  /* ---------- render ---------- */
   function renderAvatars() {
-    var wrap = $("#heroAvatars"); if (!wrap) return;
-    wrap.innerHTML = "";
-    for (var i = 0; i < 5; i++) {
-      var s = el("span");
-      s.style.background = "linear-gradient(135deg,#efe6dc," + ["#e3d4c6", "#dcc9b8", "#e7dacd", "#d8c4b1", "#e0d0bf"][i] + ")";
-      wrap.appendChild(s);
-    }
+    var w = $("#heroAvatars"); if (!w) return; w.innerHTML = "";
+    for (var i = 0; i < 5; i++) w.appendChild(el("span", null, ICON.user));
   }
 
   function renderExamples() {
-    var g = $("#examplesGrid"); if (!g) return;
-    g.innerHTML = "";
+    var g = $("#examplesGrid"); if (!g) return; g.innerHTML = "";
     D.examples.forEach(function (ex) {
-      var c = el("article", "mcard reveal");
+      var c = el("article", "ecard");
       c.innerHTML =
-        '<div class="mcard__photo">' + portrait(L(ex.name)) + '</div>' +
-        '<span class="mcard__tag">' + L(ex.cat) + '</span>' +
-        '<div class="mcard__name">' + L(ex.name) + '</div>' +
-        '<div class="mcard__dates">' + ex.dates + '</div>' +
-        '<p class="mcard__text">' + L(ex.bio) + '</p>' +
-        '<div class="mcard__foot"><a class="link-arrow" href="#/page/' + ex.id + '" data-route="/page/' + ex.id + '">' +
-          t("examples.view") + ICON.chevron + '</a></div>';
+        '<span class="ecard__tag">' + L(ex.cat) + '</span>' +
+        '<div class="ecard__photo"><img src="' + ex.photo + '" alt="' + L(ex.name) + '"></div>' +
+        '<div class="ecard__name">' + L(ex.name) + '</div>' +
+        '<div class="ecard__dates">' + ex.dates + '</div>' +
+        '<p class="ecard__text">' + L(ex.bio) + '</p>' +
+        '<div class="ecard__foot"><a class="link-arrow" href="#/page/' + ex.id + '" data-route="/page/' + ex.id + '">' + t("examples.view") + ICON.chevron + '</a></div>';
       g.appendChild(c);
     });
   }
 
   function renderFeatures() {
-    var g = $("#featuresGrid"); if (!g) return;
-    g.innerHTML = "";
+    var g = $("#featuresGrid"); if (!g) return; g.innerHTML = "";
     D.features.forEach(function (f) {
-      var c = el("div", "feature reveal");
-      c.innerHTML =
-        '<div class="feature__ic">' + (ICON[f.icon] || "") + '</div>' +
-        '<div class="feature__title">' + L(f.title) + '</div>' +
-        '<p>' + L(f.text) + '</p>';
-      g.appendChild(c);
-    });
-  }
-
-  function renderSteps() {
-    var g = $("#stepsGrid"); if (!g) return;
-    g.innerHTML = "";
-    D.steps.forEach(function (s, i) {
-      var c = el("div", "step");
-      c.innerHTML =
-        '<div class="step__n">' + (i + 1) + '</div>' +
-        '<div class="step__img">' + STEP_ICONS[i] + '</div>' +
-        '<p>' + L(s.text) + '</p>';
+      var ic = f.icon === "t" ? '<div class="feat__ic is-t">T</div>' : '<div class="feat__ic">' + (ICON[f.icon] || "") + '</div>';
+      var c = el("div", "feat", ic + '<div class="feat__title">' + L(f.title) + '</div><p>' + L(f.text) + '</p>');
       g.appendChild(c);
     });
   }
 
   function renderTeaser() {
     var wrap = $("#teaserCard"); if (!wrap) return;
-    var p = D.demoPerson;
+    var p = D.examples[state.teaserIdx % D.examples.length];
     wrap.innerHTML =
-      '<div class="teaser__photo">' + portrait(L(p.name)) + '</div>' +
-      '<div class="teaser__body">' +
-        '<div class="teaser__name">' + L(p.name) + '</div>' +
-        '<div class="teaser__dates">' + p.born + '–' + p.died + ' <span>(' + p.years + ' ' + t("teaser.years") + ')</span></div>' +
-        '<p class="teaser__quote">«' + L(p.epitaph) + '»</p>' +
-        '<div class="teaser__chips">' +
-          '<span class="chip">' + ICON.play + '</span>' +
-          '<span class="chip">' + ICON.photo + '</span>' +
-          '<span class="chip chip--t">T</span>' +
-          '<span class="chip">' + ICON.pin + '</span>' +
-        '</div>' +
-        '<div class="teaser__actions">' +
-          '<a class="btn btn--primary" href="#/page/' + p.id + '" data-route="/page/' + p.id + '"><span>' + t("teaser.viewPage") + '</span></a>' +
-          '<button class="link-arrow" id="teaserAnother">' + t("teaser.showAnother") + ICON.chevron + '</button>' +
-        '</div>' +
-      '</div>';
+      '<div class="teaser__top">' +
+        '<div><button class="btn-refresh btn-refresh--muted" id="teaserAnother">' +
+          '<span class="btn-refresh__ic">' + ICON.refresh + '</span>' +
+          '<span class="btn-refresh__txt">' + t("teaser.another") + '</span></button></div>' +
+        '<div class="teaser__photo"><img src="' + p.photo + '" alt="' + L(p.name) + '"></div>' +
+        '<div class="teaser__quote">' + L(p.quote) + '</div>' +
+      '</div>' +
+      '<div class="teaser__name">' + L(p.name) + '</div>' +
+      '<div class="teaser__dates">' + p.dates + '</div>' +
+      '<div class="teaser__life"><span>' + L(p.born) + '</span><span class="line"></span>' +
+        '<span>(' + p.years + ' ' + t("teaser.years") + ')</span><span class="line"></span><span>' + L(p.died) + '</span></div>' +
+      '<div class="teaser__actions"><a class="btn btn--primary" href="#/page/' + p.id + '" data-route="/page/' + p.id + '"><span>' + t("teaser.viewPage") + '</span>' + ICON.chevron + '</a></div>';
+    var b = $("#teaserAnother");
+    if (b) b.addEventListener("click", function () { state.teaserIdx++; renderTeaser(); });
+  }
+
+  function renderSteps() {
+    var g = $("#stepsGrid"); if (!g) return; g.innerHTML = "";
+    D.steps.forEach(function (s, i) {
+      g.appendChild(el("div", "step",
+        '<div class="step__img"><span class="step__n">' + (i + 1) + '</span><img src="' + s.img + '" alt=""></div>' +
+        '<p>' + L(s.text) + '</p>'));
+    });
+  }
+
+  function renderShare() {
+    var g = $("#shareGrid"); if (!g) return; g.innerHTML = "";
+    D.share.forEach(function (s) {
+      var photo = s.img ? '<div class="share-item__photo"><img src="' + s.img + '" alt=""></div>' : '';
+      g.appendChild(el("div", "share-item", photo + '<p>' + L(s.text) + '</p>'));
+    });
   }
 
   function renderPlans() {
     var g = $("#plansGrid"); if (!g) return;
-    var pl = D.plans;
-    function planCard(kind, data, best) {
-      var items = data.items.map(function (it) {
-        return '<li>' + ICON.check + '<span>' + L(it) + '</span></li>';
-      }).join("");
-      return '<div class="plan' + (best ? ' plan--best' : '') + '">' +
-        (best ? '<span class="plan__badge">' + t("plans.best") + '</span>' : '') +
-        '<div class="plan__name">' + t(kind === "short" ? "plans.short" : "plans.extended") + '</div>' +
-        '<div class="plan__price">' + L(data.price) + '</div>' +
-        (best ? '<div class="plan__more">' + t("plans.plusIntro") + '</div>' : '') +
-        '<ul class="plan__list">' + items + '</ul>' +
-        '<button class="btn ' + (best ? 'btn--primary' : 'btn--outline') + ' btn--block" data-route="/create"><span>' + t("plans.create") + '</span></button>' +
-        '</div>';
+    function opts(list) { return list.map(function (o) { return '<li><span class="oic">' + (ICON[o.icon] || "") + '</span><span>' + L(o.t) + '</span></li>'; }).join(""); }
+    function card(kind, data, best) {
+      return '<div class="plan">' +
+        (best ? '<div class="plan__badge">' + t("plans.best") + '</div>' : '') +
+        '<div class="plan__inner">' +
+          '<div>' +
+            '<div class="plan__name">' + t(kind === "short" ? "plans.short" : "plans.extended") + '</div>' +
+            '<a class="link-arrow plan__example" href="#/page/beethoven" data-route="/page/beethoven">' + t("plans.example") + ICON.chevron + '</a>' +
+            '<div class="plan__price">' + L(data.price) + '</div>' +
+            '<button class="btn btn--primary" data-route="/create">' + ICON.plus + '<span>' + t("plans.create") + '</span></button>' +
+          '</div>' +
+          '<div>' +
+            '<div class="plan__opts-title">' + t(best ? "plans.plusIntro" : "plans.optsTitle") + '</div>' +
+            '<ul class="plan__opts">' + opts(data.opts) + '</ul>' +
+          '</div>' +
+        '</div></div>';
     }
-    g.innerHTML = planCard("short", pl.short, false) + planCard("extended", pl.extended, true);
+    g.innerHTML = card("short", D.plans.short, false) + card("extended", D.plans.extended, true);
   }
 
   function renderArticles() {
-    var g = $("#articlesGrid"); if (!g) return;
-    g.innerHTML = "";
-    D.articles.forEach(function (a, i) {
-      var c = el("a", "article reveal");
-      c.href = "#";
-      c.style.setProperty("--tint", i);
-      c.innerHTML =
-        '<div style="width:100%;height:100%;background:linear-gradient(135deg,' +
-          ['#cbb69f,#a98a6b', '#c2ac96,#9f8365', '#d0bda6,#b09372', '#c7b39c,#a68a69'][i] + ')"></div>' +
-        '<span class="article__label">' + t("articles.label") + '</span>' +
-        '<div class="article__title">' + L(a.title) + '</div>';
+    var g = $("#articlesGrid"); if (!g) return; g.innerHTML = "";
+    D.articles.forEach(function (a) {
+      var c = el("a", "acard"); c.href = "#";
+      c.innerHTML = '<img src="assets/img/article-photo.png" alt="">' +
+        '<div class="acard__body"><div class="acard__label">' + t("articles.label") + '</div><div class="acard__title">' + L(a.title) + '</div></div>';
       g.appendChild(c);
     });
   }
 
   function renderFaq() {
-    var g = $("#faqList"); if (!g) return;
-    g.innerHTML = "";
-    D.faq.forEach(function (f) {
-      var item = el("div", "faq__item");
-      item.innerHTML =
-        '<button class="faq__q">' + L(f.q) + ICON.plus + '</button>' +
-        '<div class="faq__a"><p>' + L(f.a) + '</p></div>';
+    var g = $("#faqList"); if (!g) return; g.innerHTML = "";
+    D.faq.forEach(function (f, i) {
+      var item = el("div", "faq__item" + (i === 0 ? " is-open" : ""));
+      item.innerHTML = '<button class="faq__q">' + L(f.q) + '<span class="pm"></span></button><div class="faq__a"><p>' + L(f.a) + '</p></div>';
       var q = $(".faq__q", item), a = $(".faq__a", item);
+      if (i === 0) a.style.maxHeight = a.scrollHeight + "px";
       q.addEventListener("click", function () {
         var open = item.classList.toggle("is-open");
         a.style.maxHeight = open ? a.scrollHeight + "px" : "0";
@@ -176,156 +142,84 @@
   }
 
   function renderPress() {
-    var g = $("#pressGrid"); if (!g) return;
-    g.innerHTML = "";
+    var g = $("#pressGrid"); if (!g) return; g.innerHTML = "";
     D.press.forEach(function (p) {
-      var c = el("article", "pcard reveal");
-      c.innerHTML =
-        '<div class="pcard__media"><div class="pcard__play">' + ICON.play + '</div></div>' +
-        '<div class="pcard__body">' +
-          '<div class="pcard__label">' + L(p.label) + '</div>' +
-          '<div class="pcard__title">' + L(p.title) + '</div>' +
-        '</div>';
-      g.appendChild(c);
+      g.appendChild(el("article", "pcard",
+        '<div class="pcard__media"><img src="assets/img/article-photo.png" alt=""><div class="pcard__play">' + ICON.play + '</div></div>' +
+        '<div class="pcard__label">' + L(p.label) + '</div>' +
+        '<div class="pcard__title">' + L(p.title) + '</div>'));
     });
   }
 
   function renderStories() {
-    var g = $("#storiesGrid"); if (!g) return;
-    g.innerHTML = "";
+    var g = $("#storiesGrid"); if (!g) return; g.innerHTML = "";
     D.testimonials.forEach(function (s) {
-      var c = el("article", "tcard reveal");
-      c.innerHTML =
-        '<p class="tcard__quote">«' + L(s.quote) + '»</p>' +
-        '<div class="tcard__top"><div class="tcard__ava"></div><div class="tcard__name">' + L(s.name) + '</div></div>';
-      g.appendChild(c);
+      g.appendChild(el("article", "scard",
+        '<div class="scard__name">' + L(s.name) + '</div>' +
+        '<p class="scard__quote">' + L(s.quote) + '“</p>'));
     });
   }
 
   function renderAll() {
-    renderAvatars(); renderExamples(); renderFeatures(); renderSteps();
-    renderTeaser(); renderPlans(); renderArticles(); renderFaq(); renderPress(); renderStories();
-    applyI18nStatic();
-    observeReveal();
-    bindDynamic();
+    renderAvatars(); renderExamples(); renderFeatures(); renderTeaser(); renderSteps();
+    renderShare(); renderPlans(); renderArticles(); renderFaq(); renderPress(); renderStories();
+    applyI18n(); observeReveal();
   }
 
-  /* -------- i18n static -------- */
-  function applyI18nStatic() {
-    $all("[data-i18n]").forEach(function (n) {
-      var key = n.getAttribute("data-i18n");
-      var val = t(key);
-      if (val) n.textContent = val;
-    });
+  /* ---------- i18n static ---------- */
+  function applyI18n() {
+    $all("[data-i18n]").forEach(function (n) { var v = t(n.getAttribute("data-i18n")); if (v) n.textContent = v; });
+    $all("[data-i18n-ph]").forEach(function (n) { var v = t(n.getAttribute("data-i18n-ph")); if (v) n.setAttribute("placeholder", v); });
     document.documentElement.lang = state.lang;
-    var ph = $("#btnSearch"); // search placeholder handled in modal
   }
-
   function setLang(lang) {
     if (lang === state.lang) return;
-    state.lang = lang;
-    localStorage.setItem(LANG_KEY, lang);
+    state.lang = lang; localStorage.setItem(LANG_KEY, lang);
     $all("#langSwitch button").forEach(function (b) { b.classList.toggle("is-active", b.getAttribute("data-lang") === lang); });
     renderAll();
   }
 
-  /* -------- reveal -------- */
+  /* ---------- reveal ---------- */
   var io;
   function observeReveal() {
     if (io) io.disconnect();
-    io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: "0px 0px -30px 0px" });
     $all(".reveal").forEach(function (n) { io.observe(n); });
-    // страховка: ключевой контент виден гарантированно (см. дневник ошибок)
     requestAnimationFrame(function () {
-      $all(".reveal").forEach(function (n) {
-        var r = n.getBoundingClientRect();
-        if (r.top < window.innerHeight) n.classList.add("is-in");
-      });
+      $all(".reveal").forEach(function (n) { if (n.getBoundingClientRect().top < window.innerHeight) n.classList.add("is-in"); });
     });
   }
 
-  /* -------- modal / toast -------- */
-  function openModal(html) {
-    $("#modalDialog").innerHTML = html;
-    $("#modal").classList.add("is-open");
-    document.body.classList.add("no-scroll");
+  /* ---------- modal / toast / router ---------- */
+  function toast(msg) {
+    var w = $("#toastWrap"); var e = el("div", "toast", msg); w.appendChild(e);
+    setTimeout(function () { e.style.opacity = "0"; }, 2600);
+    setTimeout(function () { e.remove(); }, 3000);
   }
-  function closeModal() { $("#modal").classList.remove("is-open"); document.body.classList.remove("no-scroll"); }
-  function toast(msg, kind) {
-    var w = $("#toastWrap");
-    var el2 = el("div", "toast" + (kind ? " toast--" + kind : ""), msg);
-    w.appendChild(el2);
-    setTimeout(function () { el2.style.opacity = "0"; el2.style.transform = "translateY(10px)"; }, 2600);
-    setTimeout(function () { el2.remove(); }, 3000);
-  }
+  function go(path) { if (!path || path === "/") return; toast(t("common.soon")); }
 
-  /* -------- router (скелет; экраны кроме home — след. итерации) -------- */
-  function go(path) {
-    if (!path || path === "/" || path === "") {
-      showScreen("home");
-      return;
-    }
-    // публичная страница, мастер, кабинет и т.д. — в разработке
-    toast(t("common.soon"));
-  }
-  function showScreen(name) {
-    $all(".screen").forEach(function (s) { s.classList.toggle("is-active", s.id === "screen-" + name); });
-    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
-  }
-
-  /* -------- dynamic bindings (после каждого рендера) -------- */
-  function bindDynamic() {
-    var another = $("#teaserAnother");
-    if (another) another.addEventListener("click", function () { toast(t("common.soon")); });
-  }
-
-  /* -------- static bindings (один раз) -------- */
-  function bindStatic() {
-    // язык
-    $all("#langSwitch button").forEach(function (b) {
-      b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
-    });
-    // роутинг по data-route
+  function bind() {
+    $all("#langSwitch button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); }); });
     document.addEventListener("click", function (e) {
       var r = e.target.closest("[data-route]");
-      if (r) { e.preventDefault(); go(r.getAttribute("data-route")); return; }
+      if (r) { e.preventDefault(); go(r.getAttribute("data-route")); }
     });
-    // бургер / мобильное меню
     var mnav = $("#mobileNav");
     $("#burger").addEventListener("click", function () { mnav.classList.add("is-open"); document.body.classList.add("no-scroll"); });
+    function closeMnav() { mnav.classList.remove("is-open"); document.body.classList.remove("no-scroll"); }
     $all("[data-close-mnav]").forEach(function (n) { n.addEventListener("click", closeMnav); });
     $all(".mobile-nav__panel a").forEach(function (a) { a.addEventListener("click", closeMnav); });
-    function closeMnav() { mnav.classList.remove("is-open"); document.body.classList.remove("no-scroll"); }
-    // модалка закрытие
-    $all("[data-close-modal]").forEach(function (n) { n.addEventListener("click", closeModal); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeModal(); closeMnav(); } });
-    // поиск
-    $("#btnSearch").addEventListener("click", function () {
-      openModal('<button class="modal__close" data-close-modal>' +
-        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>' +
-        '<h3 class="modal__title">' + t("search.placeholder") + '</h3>' +
-        '<div class="field"><input type="text" placeholder="' + t("search.placeholder") + '"></div>' +
-        '<p style="margin-top:14px;font-size:.9rem;color:var(--ink-soft)">' + t("common.soon") + '</p>');
-      $(".modal__close", $("#modalDialog")).addEventListener("click", closeModal);
-      var inp = $("#modalDialog input"); if (inp) inp.focus();
-    });
-    // поддержка
-    $("#btnSupport").addEventListener("click", function () { toast(t("common.soon")); });
-    // "другие истории"
-    $("#storiesMore").addEventListener("click", function () { toast(t("common.soon")); });
-    // hash routing on load/change
-    window.addEventListener("hashchange", function () {
-      var h = location.hash.replace(/^#/, "");
-      if (h.charAt(0) === "/") go(h);
-    });
+    $all("[data-close-modal]").forEach(function (n) { n.addEventListener("click", function () { $("#modal").classList.remove("is-open"); document.body.classList.remove("no-scroll"); }); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMnav(); });
+    var er = $("#examplesRefresh"); if (er) er.addEventListener("click", function () { toast(t("common.soon")); });
+    var sr = $("#storiesRefresh"); if (sr) sr.addEventListener("click", function () { toast(t("common.soon")); });
+    var bs = $("#btnSupport"); if (bs) bs.addEventListener("click", function () { toast(t("common.soon")); });
   }
 
-  /* -------- init -------- */
   document.addEventListener("DOMContentLoaded", function () {
     $all("#langSwitch button").forEach(function (b) { b.classList.toggle("is-active", b.getAttribute("data-lang") === state.lang); });
-    bindStatic();
-    renderAll();
+    bind(); renderAll();
   });
 })();
