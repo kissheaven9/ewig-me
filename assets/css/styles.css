@@ -108,9 +108,18 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .header__row { display: flex; align-items: center; gap: 18px; min-height: 96px; }
 .brand__badge { height: 46px; width: auto; }
 .search {
+  position: relative;
   flex: 1; max-width: 620px; display: flex; align-items: center; gap: 12px;
   height: 50px; padding: 0 22px; border: 2px solid var(--accent); border-radius: var(--r-pill); background: #fff;
 }
+.search-results { position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: #fff; border-radius: 20px; box-shadow: var(--shadow-pop); overflow: hidden; z-index: 80; display: none; max-height: 60vh; overflow-y: auto; }
+.search-results.is-open { display: block; }
+.sr-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; transition: background .15s; }
+.sr-item:hover { background: var(--panel); }
+.sr-item img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; object-position: 50% 14%; flex: none; }
+.sr-item__name { font-size: 14px; font-weight: 500; color: var(--ink-title); }
+.sr-item__dates { font-family: var(--font-display); font-size: 17px; color: var(--accent); }
+.sr-empty { padding: 16px; font-size: 13px; color: var(--ink-soft); }
 .search svg { width: 18px; height: 18px; color: var(--accent); flex: none; }
 .search input { flex: 1; border: 0; outline: none; font: inherit; font-size: 14px; color: var(--ink-body); background: transparent; }
 .search input::placeholder { color: var(--accent-soft); }
@@ -133,7 +142,7 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 
 /* -------- Hero -------- */
 .hero { padding-block: clamp(40px, 5vw, 68px); }
-.hero__grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(30px, 4vw, 56px); align-items: start; }
+.hero__grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(30px, 4vw, 56px); align-items: stretch; }
 .hero__title { font-weight: 400; text-transform: uppercase; color: var(--ink-title); font-size: 32px; line-height: 1.25; letter-spacing: 0; max-width: 640px; }
 .hero__lead { margin-top: 22px; font-size: 14px; color: var(--ink-body); max-width: 560px; }
 .hero__counter { margin-top: 40px; display: flex; align-items: center; gap: 18px; }
@@ -145,10 +154,10 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .counter__label { font-size: 14px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--ink-body); line-height: 1.15; }
 .hero__note { margin-top: 34px; font-size: 13px; font-style: italic; color: var(--ink-soft); }
 .hero__cta { margin-top: 20px; display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
-.hero__visual { background: var(--panel); border-radius: 30px; overflow: hidden; }
-.hp { display: block; color: inherit; }
-.hp__photo { aspect-ratio: 16/10; overflow: hidden; background: #fff; }
-.hp__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; transition: transform .5s var(--ease); }
+.hero__visual { background: var(--panel); border-radius: 30px; overflow: hidden; display: flex; }
+.hp { display: flex; flex-direction: column; flex: 1; color: inherit; min-width: 0; }
+.hp__photo { flex: 1 1 auto; min-height: 0; overflow: hidden; background: #fff; position: relative; }
+.hp__photo img, .hp__photo svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; transition: transform .5s var(--ease); }
 .hp:hover .hp__photo img { transform: scale(1.03); }
 .hp__body { padding: 22px clamp(20px,3vw,30px) 26px; }
 .hp__name { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: 20px; letter-spacing: .02em; line-height: 1.15; overflow-wrap: anywhere; }
@@ -502,6 +511,9 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 /* -------- Responsive -------- */
 @media (max-width: 1024px) {
   .hero__grid, .eb, .feat-head, .faq-grid { grid-template-columns: 1fr; }
+  .hero__visual { display: block; }
+  .hp { display: block; }
+  .hp__photo { flex: none; min-height: 0; aspect-ratio: 16/10; }
   .feats, .share-items, .steps, .cards4 { grid-template-columns: repeat(2, 1fr); }
   .footer__grid { grid-template-columns: 1fr 1fr; }
   .footer__support { grid-column: 1 / -1; }

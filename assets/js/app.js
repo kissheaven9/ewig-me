@@ -777,6 +777,32 @@
     var mb = $("#examplesMore"); if (mb) mb.addEventListener("click", function () { state.exShown = Math.min(exOrder().length, (state.exShown || 3) + 3); renderExamples(); });
     var sr = $("#storiesRefresh"); if (sr) sr.addEventListener("click", function () { toast(t("common.soon")); });
     var bs = $("#btnSupport"); if (bs) bs.addEventListener("click", function () { toast(t("common.soon")); });
+    bindSearch();
+  }
+
+  function bindSearch() {
+    var inp = $("#searchInput"), box = $("#searchResults"); if (!inp || !box) return;
+    function items() {
+      var arr = P.map(function (p) { return { id: p.id, name: L(p.name), search: ((p.name.de || "") + " " + (p.name.ru || "")).toLowerCase(), dates: p.dates, photo: personPhoto(p.id) }; });
+      getPages().forEach(function (u) { arr.push({ id: u.id, name: u.name || "—", search: (u.name || "").toLowerCase(), dates: (u.born || "") + "–" + (u.died || ""), photo: (u.photos && u.photos[0]) || u.photo || null }); });
+      return arr;
+    }
+    function render(q) {
+      q = q.trim().toLowerCase();
+      if (!q) { box.classList.remove("is-open"); box.innerHTML = ""; return; }
+      var res = items().filter(function (x) { return x.search.indexOf(q) !== -1; }).slice(0, 8);
+      if (!res.length) { box.innerHTML = '<div class="sr-empty">' + (state.lang === "de" ? "Nichts gefunden" : "Ничего не найдено") + '</div>'; box.classList.add("is-open"); return; }
+      box.innerHTML = res.map(function (x) {
+        var img = x.photo ? '<img src="' + x.photo + '" alt="">' : '<span style="width:42px;height:42px;flex:none">' + portrait(x.name) + '</span>';
+        return '<div class="sr-item" data-route="/page/' + x.id + '">' + img + '<div><div class="sr-item__name">' + esc(x.name) + '</div><div class="sr-item__dates">' + x.dates + '</div></div></div>';
+      }).join("");
+      box.classList.add("is-open");
+    }
+    inp.addEventListener("input", function () { render(inp.value); });
+    inp.addEventListener("focus", function () { if (inp.value.trim()) render(inp.value); });
+    box.addEventListener("click", function () { setTimeout(function () { box.classList.remove("is-open"); inp.value = ""; }, 10); });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".search")) box.classList.remove("is-open"); });
+    inp.addEventListener("keydown", function (e) { if (e.key === "Escape") { box.classList.remove("is-open"); inp.blur(); } });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
