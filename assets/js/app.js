@@ -533,6 +533,7 @@
     var links = (page.links || []).filter(function (l) { return l.url || l.name; }).map(function (l) { return '<span class="pv-link">' + esc(l.name || l.url) + '</span>'; }).join("");
     var qrUrl = location.origin + location.pathname + "#/page/" + (page.id || "neu");
     var mq = page.mapQuery || page.coords || "";
+    var mapSrc = mapEmbedSrc(mq);
     var mapText = page.cemetery || (/^https?:\/\//i.test(mq) ? "" : mq) || (mq ? "Standort" : "");
     return '<div class="pv">' +
       (photo ? '<div class="pv-photo"><img src="' + photo + '"></div>' : '<div class="pv-photo pv-photo--empty">' + portrait(page.name || "") + '</div>') +
@@ -543,12 +544,29 @@
       (page.bio ? '<div class="pv-sub">' + t("pub.bio") + '</div><div class="pv-bio">' + esc(page.bio) + '</div>' : '') +
       (vid ? '<div class="pv-sub">' + t("pub.media") + '</div><div class="pv-video" style="background-image:url(https://img.youtube.com/vi/' + vid + '/hqdefault.jpg)"><span class="pv-play">' + ICON.play + '</span></div>' : '') +
       (gal ? '<div class="pv-sub">' + t("pub.photos") + '</div><div class="pv-gal">' + gal + '</div>' : '') +
-      (mapText ? '<div class="pv-sub">' + t("pub.grave") + '</div><div class="pv-map"><span class="pv-map__pin">' + ICON.pin + '</span><span>' + esc(mapText) + '</span></div>' : '') +
+      (mapSrc ? '<div class="pv-sub">' + t("pub.grave") + '</div>' + (page.cemetery ? '<div class="pv-mapcap">' + esc(page.cemetery) + '</div>' : '') + '<div id="pvMapSlot" class="pv-mapwrap"></div>'
+              : (mapText ? '<div class="pv-sub">' + t("pub.grave") + '</div><div class="pv-map"><span class="pv-map__pin">' + ICON.pin + '</span><span>' + esc(mapText) + '</span></div>' : '')) +
       (links ? '<div class="pv-sub">' + t("pub.links") + '</div><div class="pv-links">' + links + '</div>' : '') +
       '<div class="pv-sub">' + t("pub.qr") + '</div><div class="pv-qr"><img src="' + makeQR(qrUrl) + '" alt="QR"><button type="button" class="pv-sharebtn">' + t("pub.share") + '</button></div>' +
       '</div>';
   }
-  function updatePreview() { var b = $("#previewBody"); if (b && state.editing) b.innerHTML = editorPreview(state.editing); }
+  function updatePreview() {
+    var b = $("#previewBody"); if (!b || !state.editing) return;
+    b.innerHTML = editorPreview(state.editing);
+    var slot = $("#pvMapSlot", b);
+    if (slot) {
+      var mq = state.editing.mapQuery || state.editing.coords || "";
+      var src = mapEmbedSrc(mq);
+      if (src) {
+        if (state.pvMapEl && state.pvMapSrc === src) { slot.appendChild(state.pvMapEl); } // без перезагрузки
+        else {
+          var f = document.createElement("iframe");
+          f.src = src; f.loading = "lazy"; f.title = "Karte"; f.setAttribute("frameborder", "0");
+          state.pvMapEl = f; state.pvMapSrc = src; slot.appendChild(f);
+        }
+      }
+    }
+  }
 
   function renderEditor(id) {
     var wrap = $("#screen-editor");
