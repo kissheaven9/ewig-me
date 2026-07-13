@@ -54,6 +54,25 @@
     }
   }
 
+  function renderHeroVisual() {
+    var w = $("#heroVisual"); if (!w) return;
+    var p = P[0]; if (!p) { return; }
+    var ph = personPhoto(p.id);
+    var chipDefs = ["play", "photo", "t", "pin"];
+    var chips = chipDefs.map(function (c) { return '<span class="hp__chip">' + (c === "t" ? "T" : (ICON[c] || "")) + '</span>'; }).join("");
+    w.innerHTML =
+      '<a class="hp" href="#/page/' + p.id + '" data-route="/page/' + p.id + '">' +
+        '<div class="hp__photo">' + (ph ? '<img src="' + ph + '" alt="' + L(p.name) + '">' : portrait(L(p.name))) + '</div>' +
+        '<div class="hp__body">' +
+          '<div class="hp__name">' + L(p.name) + '</div>' +
+          '<div class="hp__dates">' + p.dates + '</div>' +
+          '<p class="hp__quote">«' + (L(p.quote) || blurb(p)) + '»</p>' +
+          '<div class="hp__chips">' + chips + '</div>' +
+          '<span class="hp__view link-arrow">' + t("teaser.viewPage") + ICON.chevron + '</span>' +
+        '</div>' +
+      '</a>';
+  }
+
   function blurb(p) {
     var beruf = infoVal(p, "Beruf"); var ort = infoVal(p, "Geburtsort");
     var parts = [];
@@ -204,7 +223,7 @@
   }
 
   function renderAll() {
-    renderAvatars(); renderExamples(); renderFeatures(); renderTeaser(); renderSteps();
+    renderAvatars(); renderHeroVisual(); renderExamples(); renderFeatures(); renderTeaser(); renderSteps();
     renderShare(); renderPlans(); renderArticles(); renderFaq(); renderPress(); renderStories();
     applyI18n(); observeReveal();
   }
