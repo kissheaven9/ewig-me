@@ -67,8 +67,9 @@
   }
   function renderExamples() {
     var g = $("#examplesGrid"); if (!g) return; g.innerHTML = "";
+    if (!state.exShown) state.exShown = 3;
     var order = exOrder();
-    var shown = state.exExpanded ? order : order.slice(0, 3);
+    var shown = order.slice(0, state.exShown);
     shown.forEach(function (idx) {
       var ex = P[idx]; if (!ex) return;
       var ph = personPhoto(ex.id);
@@ -84,8 +85,8 @@
     });
     var mb = $("#examplesMore");
     if (mb) {
-      if (order.length <= 3) mb.style.display = "none";
-      else { mb.style.display = ""; mb.textContent = state.exExpanded ? t("examples.less") : t("examples.more").split("%n").join(order.length); }
+      if (state.exShown >= order.length) mb.style.display = "none";
+      else { mb.style.display = ""; mb.textContent = t("examples.more"); }
     }
   }
 
@@ -754,7 +755,7 @@
       for (var i = o.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = o[i]; o[i] = o[j]; o[j] = tmp; }
       state.exOrder = o; renderExamples();
     });
-    var mb = $("#examplesMore"); if (mb) mb.addEventListener("click", function () { state.exExpanded = !state.exExpanded; renderExamples(); if (!state.exExpanded) { var s = $("#examples"); if (s) s.scrollIntoView(); } });
+    var mb = $("#examplesMore"); if (mb) mb.addEventListener("click", function () { state.exShown = Math.min(exOrder().length, (state.exShown || 3) + 3); renderExamples(); });
     var sr = $("#storiesRefresh"); if (sr) sr.addEventListener("click", function () { toast(t("common.soon")); });
     var bs = $("#btnSupport"); if (bs) bs.addEventListener("click", function () { toast(t("common.soon")); });
   }

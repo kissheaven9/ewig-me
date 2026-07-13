@@ -23,7 +23,7 @@ window.I18N = {
 
     "examples.refresh": "Aktualisieren",
     "examples.view": "jetzt Gedenkseite ansehen",
-    "examples.more": "Alle %n Gedenkseiten ansehen",
+    "examples.more": "Mehr anzeigen",
     "examples.less": "Weniger anzeigen",
 
     "keep.title": "Was kannst du auf einer Erinnerungsseite bewahren?",
@@ -145,7 +145,7 @@ window.I18N = {
 
     "examples.refresh": "Обновить",
     "examples.view": "Посмотреть страницу",
-    "examples.more": "Показать все %n страниц",
+    "examples.more": "Показать больше",
     "examples.less": "Свернуть",
 
     "keep.title": "Что можно хранить на странице памяти?",
