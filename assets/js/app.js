@@ -559,7 +559,7 @@
       '<h1 class="h-section" style="margin-bottom:6px">' + t("ed.titleExt") + '</h1>' +
       '<p style="color:var(--ink-soft);font-size:14px;margin-bottom:26px">' + t("ed.avgTime") + '</p>' +
       '<div class="editor-split"><div class="editor-form">' + form + '</div>' +
-      '<div class="editor-preview"><div class="preview-label">' + t("ed.livePreview") + '</div><div class="phone"><div class="phone__scroll"><div id="previewBody"></div></div></div></div></div></div>';
+      '<div class="editor-preview"><div class="phone"><div class="phone__scroll"><div id="previewBody"></div></div></div></div></div></div>';
     bindEditor(id);
     updatePreview();
   }
