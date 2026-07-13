@@ -332,7 +332,12 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .media-box:hover .media-box__ov { background: rgba(45,35,28,.15); }
 .media-box .pcard__play { position: relative; z-index: 2; }
 .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.photos-grid div { aspect-ratio: 1/1; border-radius: 12px; background: linear-gradient(135deg,#efe6dc,#ddccbc); }
+.photos-grid > div { aspect-ratio: 1/1; border-radius: 12px; background: linear-gradient(135deg,#efe6dc,#ddccbc); }
+.photos-grid--cap { align-items: start; }
+.ph-fig { margin: 0; }
+.ph-fig .ph-img { aspect-ratio: 1/1; border-radius: 12px; background: #eee center/cover; }
+.ph-fig figcaption { font-size: 10px; color: var(--ink-soft); margin-top: 6px; line-height: 1.35; }
+.ph-fig figcaption a { color: var(--accent); }
 .map-box { aspect-ratio: 16/6; border-radius: 14px; overflow: hidden; position: relative; background: #e9e2d8; display: grid; place-items: center; color: var(--accent); }
 .map-box svg { width: 46px; height: 46px; }
 .map-coords { position: absolute; left: 16px; bottom: 14px; background: #fff; border-radius: 20px; padding: 8px 16px; font-size: 13px; color: var(--ink-body); box-shadow: var(--shadow-card); }

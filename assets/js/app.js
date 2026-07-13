@@ -7,6 +7,11 @@
   var urlLang = (new URLSearchParams(location.search)).get("lang");
   var state = { lang: (urlLang === "de" || urlLang === "ru") ? urlLang : (localStorage.getItem(LANG_KEY) || "de"), teaserIdx: 0 };
   var D = window.DATA, I = window.I18N;
+  var P = window.PEOPLE || [], G = window.GALLERIES || {};
+  function personById(id) { for (var i = 0; i < P.length; i++) if (P[i].id === id) return P[i]; return null; }
+  function personGallery(id) { return (G[id] || []).map(function (x) { return x.src; }); }
+  function personPhoto(id) { var g = G[id]; return (g && g[0] && g[0].src) || null; }
+  function infoVal(person, keyDe) { var f = (person.info || []).filter(function (x) { return x.k.de === keyDe; })[0]; return f ? f.v : null; }
 
   function $(s, c) { return (c || document).querySelector(s); }
   function $all(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
@@ -39,26 +44,39 @@
   /* ---------- render ---------- */
   function renderAvatars() {
     var w = $("#heroAvatars"); if (!w) return; w.innerHTML = "";
-    var photos = D.examples.map(function (e) { return e.photo; });
-    var order = [0, 1, 2, 0, 2];
+    var order = [0, 1, 2, 3, 4];
     for (var i = 0; i < 5; i++) {
+      var pid = (P[order[i]] || P[i % P.length] || {}).id;
+      var ph = personPhoto(pid);
       var s = el("span");
-      s.style.backgroundImage = "url(" + photos[order[i] % photos.length] + ")";
-      s.style.backgroundSize = "cover"; s.style.backgroundPosition = "50% 12%";
+      if (ph) { s.style.backgroundImage = "url(" + ph + ")"; s.style.backgroundSize = "cover"; s.style.backgroundPosition = "50% 12%"; }
       w.appendChild(s);
     }
   }
 
+  function blurb(p) {
+    var beruf = infoVal(p, "Beruf"); var ort = infoVal(p, "Geburtsort");
+    var parts = [];
+    if (beruf) parts.push(L(beruf));
+    if (ort) parts.push(L(ort));
+    return parts.join(" · ");
+  }
+  function exOrder() {
+    if (!state.exOrder || state.exOrder.length !== P.length) state.exOrder = P.map(function (_, i) { return i; });
+    return state.exOrder;
+  }
   function renderExamples() {
     var g = $("#examplesGrid"); if (!g) return; g.innerHTML = "";
-    D.examples.forEach(function (ex) {
+    exOrder().forEach(function (idx) {
+      var ex = P[idx]; if (!ex) return;
+      var ph = personPhoto(ex.id);
       var c = el("article", "ecard");
       c.innerHTML =
         '<span class="ecard__tag">' + L(ex.cat) + '</span>' +
-        '<div class="ecard__photo"><img src="' + ex.photo + '" alt="' + L(ex.name) + '"></div>' +
+        '<div class="ecard__photo">' + (ph ? '<img src="' + ph + '" alt="' + L(ex.name) + '">' : portrait(L(ex.name))) + '</div>' +
         '<div class="ecard__name">' + L(ex.name) + '</div>' +
         '<div class="ecard__dates">' + ex.dates + '</div>' +
-        '<p class="ecard__text">' + L(ex.bio) + '</p>' +
+        '<p class="ecard__text">' + blurb(ex) + '</p>' +
         '<div class="ecard__foot"><a class="link-arrow" href="#/page/' + ex.id + '" data-route="/page/' + ex.id + '">' + t("examples.view") + ICON.chevron + '</a></div>';
       g.appendChild(c);
     });
@@ -75,14 +93,15 @@
 
   function renderTeaser() {
     var wrap = $("#teaserCard"); if (!wrap) return;
-    var p = D.examples[state.teaserIdx % D.examples.length];
+    var p = P[state.teaserIdx % P.length]; if (!p) return;
+    var ph = personPhoto(p.id);
     wrap.innerHTML =
       '<div class="teaser__top">' +
         '<div><button class="btn-refresh btn-refresh--muted" id="teaserAnother">' +
           '<span class="btn-refresh__ic">' + ICON.refresh + '</span>' +
           '<span class="btn-refresh__txt">' + t("teaser.another").split("%n").join(pageCount()) + '</span></button></div>' +
-        '<div class="teaser__photo"><img src="' + p.photo + '" alt="' + L(p.name) + '"></div>' +
-        '<div class="teaser__quote">' + L(p.quote) + '</div>' +
+        '<div class="teaser__photo">' + (ph ? '<img src="' + ph + '" alt="' + L(p.name) + '">' : portrait(L(p.name))) + '</div>' +
+        '<div class="teaser__quote">' + (L(p.quote) || blurb(p)) + '</div>' +
       '</div>' +
       '<div class="teaser__name">' + L(p.name) + '</div>' +
       '<div class="teaser__dates">' + p.dates + '</div>' +
@@ -183,7 +202,7 @@
   }
 
   /* ---------- i18n static ---------- */
-  function pageCount() { return (D.examples ? D.examples.length : 0) + getPages().length; }
+  function pageCount() { return P.length + getPages().length; }
   function applyI18n() {
     var cnt = pageCount();
     $all("[data-i18n]").forEach(function (n) { var v = t(n.getAttribute("data-i18n")); if (v) n.textContent = v.split("%n").join(cnt); });
@@ -231,6 +250,7 @@
   }
   function routeTo(path) {
     state.route = path;
+    if (path && path.indexOf("/page/") !== 0) resetSEO();
     if (!path || path === "/" || path === "") { showScreen("home"); return; }
     var p = path.replace(/^\//, "").split("/"), seg = p[0], id = p[1];
     if (seg === "page") { renderPublic(id); showScreen("page"); }
@@ -263,69 +283,117 @@
   }
   function backLink() { return '<a class="back-link" href="#/" data-route="/">' + ICON.chevron + '<span>' + t("pub.back") + '</span></a>'; }
 
+  /* ---------- SEO helpers ---------- */
+  function setMeta(name, content) {
+    var m = document.head.querySelector('meta[name="' + name + '"]');
+    if (!m) { m = document.createElement("meta"); m.setAttribute("name", name); document.head.appendChild(m); }
+    m.setAttribute("content", content);
+  }
+  function setJSONLD(obj) {
+    var s = document.getElementById("ld-person");
+    if (obj === null) { if (s) s.remove(); return; }
+    if (!s) { s = document.createElement("script"); s.id = "ld-person"; s.type = "application/ld+json"; document.head.appendChild(s); }
+    s.textContent = JSON.stringify(obj);
+  }
+  function resetSEO() {
+    document.title = "ewig.me — Digitale Gedenkseite erstellen";
+    setMeta("description", "ewig.me — erstelle eine würdige digitale Gedenkseite mit Fotos, Biografie, Karte und QR-Code.");
+    setJSONLD(null);
+  }
+
   /* ---------- PUBLIC memorial page ---------- */
   function renderPublic(id) {
     var wrap = $("#screen-page");
-    var ex = D.examples.filter(function (e) { return e.id === id; })[0];
-    var mem = D.memorials[id];
-    var up = findPage(id);
-    var name, dates, born, died, years, quote, photo, infoHtml = "", bioHtml = "", grave = "", coords = "", wiki = "", plan = "extended", isUser = false;
-    if (ex && mem) {
-      name = L(ex.name); dates = ex.dates; born = L(ex.born); died = L(ex.died); years = ex.years;
-      quote = L(ex.quote); photo = ex.photo;
-      infoHtml = mem.info.map(function (i) { return '<div class="info-cell"><dt>' + L(i.k) + '</dt><dd>' + L(i.v) + '</dd></div>'; }).join("");
-      bioHtml = mem.bio[state.lang].map(function (p) { return '<p>' + p + '</p>'; }).join("");
-      grave = L(mem.grave); coords = mem.coords; wiki = mem.wiki;
+    var person = personById(id);
+    var up = person ? null : findPage(id);
+    var name, dates, born, died, years, quote, photo, infoArr = [], bioArr = [], grave = "", coords = "", video = "", gallery = [], plan = "extended", isUser = false, wikiName = "";
+
+    if (person) {
+      name = L(person.name); dates = person.dates; born = L(person.born); died = L(person.died); years = person.years;
+      quote = L(person.quote); infoArr = person.info || []; bioArr = (person.bio && person.bio[state.lang]) || [];
+      grave = L(person.grave); coords = person.coords || ""; video = person.video || "";
+      gallery = (G[id] || []); photo = personPhoto(id); wikiName = person.name.de;
     } else if (up) {
       isUser = true; name = up.name; born = up.born; died = up.died; dates = (up.born || "") + "–" + (up.died || "");
-      quote = up.epitaph || ""; photo = up.photo || null; plan = up.plan || "short"; grave = up.cemetery || ""; coords = up.coords || "";
+      quote = up.epitaph || ""; photo = (up.photos && up.photos[0]) || up.photo || null; plan = up.plan || "short";
+      grave = up.cemetery || ""; coords = up.coords || ""; bioArr = up.bio ? [up.bio] : [];
+      gallery = (up.photos || []).map(function (s) { return { src: s, caption: "" }; });
+      if (up.birthplace || up.job) infoArr = [
+        up.birthplace ? { k: { de: "Geburtsort", ru: "Место рождения" }, v: { de: up.birthplace, ru: up.birthplace } } : null,
+        up.job ? { k: { de: "Beruf", ru: "Род деятельности" }, v: { de: up.job, ru: up.job } } : null
+      ].filter(Boolean);
+      video = (up.videos && up.videos[0]) ? ytId(up.videos[0]) : "";
     } else { wrap.innerHTML = '<div class="container subpage">' + backLink() + '<p>' + t("common.soon") + '</p></div>'; return; }
 
-    var photoHtml = photo ? '<img src="' + photo + '" alt="' + name + '">' : portrait(name);
     var url = location.origin + location.pathname + "#/page/" + id;
+    var photoHtml = photo ? '<img src="' + photo + '" alt="' + esc(name) + '">' : portrait(name);
     var html = '<div class="container subpage">' + backLink() +
-      '<div class="pub-hero">' +
+      '<article class="pub"><div class="pub-hero">' +
         '<div class="pub-hero__photo">' + photoHtml + '</div>' +
-        '<div><div class="pub-hero__name">' + name + '</div>' +
+        '<div><h1 class="pub-hero__name">' + esc(name) + '</h1>' +
         '<div class="pub-hero__dates">' + dates + (years ? ' <span>(' + years + ' ' + t("pub.years") + ')</span>' : '') + '</div>' +
-        (quote ? '<p class="pub-hero__epitaph">«' + quote + '»</p>' : '') + '</div>' +
+        (quote ? '<p class="pub-hero__epitaph">«' + esc(quote) + '»</p>' : '') + '</div>' +
       '</div>';
 
-    if (infoHtml) html += '<div class="block"><div class="block__title">' + t("pub.info") + '</div><div class="info-grid">' + infoHtml + '</div></div>';
-    if (bioHtml) html += '<div class="block"><div class="block__title">' + t("pub.bio") + '</div><div class="bio-text">' + bioHtml + '</div></div>';
+    if (infoArr.length) {
+      var infoHtml = infoArr.map(function (i) { return '<div class="info-cell"><dt>' + L(i.k) + '</dt><dd>' + esc(L(i.v)) + '</dd></div>'; }).join("");
+      html += '<section class="block"><h2 class="block__title">' + t("pub.info") + '</h2><div class="info-grid">' + infoHtml + '</div></section>';
+    }
+    if (bioArr.length) {
+      var bioHtml = bioArr.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join("");
+      html += '<section class="block"><h2 class="block__title">' + t("pub.bio") + '</h2><div class="bio-text">' + bioHtml + '</div></section>';
+    }
     if (plan === "extended") {
-      if (mem && mem.video) {
-        html += '<div class="block"><div class="block__title">' + t("pub.media") + '</div>' +
-          '<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/' + mem.video + '" title="Video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>';
-      }
-      var gal = (mem && mem.gallery && mem.gallery.length) ? mem.gallery : (photo ? [photo] : []);
-      if (gal.length) {
-        var tiles = gal.map(function (g) { return '<div style="background-image:url(' + g + ');background-size:cover;background-position:50% 12%"></div>'; }).join("");
-        html += '<div class="block"><div class="block__title">' + t("pub.photos") + '</div><div class="photos-grid">' + tiles + '</div></div>';
+      if (video) html += '<section class="block"><h2 class="block__title">' + t("pub.media") + '</h2>' +
+        '<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/' + video + '" title="Video: ' + esc(name) + '" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>';
+      if (gallery.length) {
+        var tiles = gallery.map(function (g) {
+          var cap = g.caption ? '<figcaption>' + esc(g.caption) + (g.commons ? ' · <a href="' + g.commons + '" target="_blank" rel="noopener">Quelle</a>' : '') + '</figcaption>' : '';
+          return '<figure class="ph-fig"><div class="ph-img" style="background-image:url(' + g.src + ')"></div>' + cap + '</figure>';
+        }).join("");
+        html += '<section class="block"><h2 class="block__title">' + t("pub.photos") + '</h2><div class="photos-grid photos-grid--cap">' + tiles + '</div></section>';
       }
     }
     if (grave) {
       var mapInner = coords
-        ? '<div class="map-embed"><iframe src="https://maps.google.com/maps?q=' + encodeURIComponent(coords) + '&z=13&output=embed" loading="lazy"></iframe><div class="map-coords">' + grave + ' · ' + coords + '</div></div>'
-        : '<div class="map-box">' + ICON.pin + '<div class="map-coords">' + grave + '</div></div>';
-      html += '<div class="block"><div class="block__title">' + t("pub.grave") + '</div>' + mapInner + '</div>';
+        ? '<div class="map-embed"><iframe src="https://maps.google.com/maps?q=' + encodeURIComponent(coords) + '&z=13&output=embed" loading="lazy" title="Karte"></iframe><div class="map-coords">' + esc(grave) + ' · ' + coords + '</div></div>'
+        : '<div class="map-box">' + ICON.pin + '<div class="map-coords">' + esc(grave) + '</div></div>';
+      html += '<section class="block"><h2 class="block__title">' + t("pub.grave") + '</h2>' + mapInner + '</section>';
     }
-    if (wiki) html += '<div class="block"><div class="block__title">' + t("pub.links") + '</div><div class="ext-links">' +
-      '<a href="' + wiki + '" target="_blank" rel="noopener" aria-label="Wikipedia"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h3l3 9 3-9h2l3 9 3-9h2l-4.5 14h-2L15 10l-3.5 9h-2L5 5z"/></svg></a>' +
-      '<a href="#" aria-label="Teilen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.1 10.9l7.8-3.8M8.1 13.1l7.8 3.8"/></svg></a>' +
-      '</div></div>';
-    html += '<div class="block"><div class="block__title">' + t("pub.qr") + '</div><div class="qr-block">' +
-      '<div class="qr-canvas"><img src="' + makeQR(url) + '" alt="QR"></div>' +
+    if (wikiName) {
+      var wikiUrl = "https://de.wikipedia.org/wiki/" + encodeURIComponent(wikiName.replace(/ /g, "_"));
+      html += '<section class="block"><h2 class="block__title">' + t("pub.links") + '</h2><div class="ext-links">' +
+        '<a href="' + wikiUrl + '" target="_blank" rel="noopener" aria-label="Wikipedia"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h3l3 9 3-9h2l3 9 3-9h2l-4.5 14h-2L15 10l-3.5 9h-2L5 5z"/></svg></a>' +
+        '</div></section>';
+    }
+    html += '<section class="block"><h2 class="block__title">' + t("pub.qr") + '</h2><div class="qr-block">' +
+      '<div class="qr-canvas"><img src="' + makeQR(url) + '" alt="QR-Code"></div>' +
       '<div class="qr-info"><p>' + t("pub.qrHint") + '</p><div class="ed-actions">' +
         '<button class="btn btn--primary" id="pubShare"><span>' + t("pub.share") + '</span></button>' +
         (isUser ? '<button class="btn btn--outline" data-route="/editor/' + id + '"><span>' + t("cab.edit") + '</span></button>' +
                   '<a class="link-arrow" href="#/" data-route="/cabinet"><span>' + t("cab.title") + '</span>' + ICON.chevron + '</a>' : '') +
-      '</div></div></div></div>';
+      '</div></div></div></section></article></div>';
     wrap.innerHTML = html;
     var sb = $("#pubShare"); if (sb) sb.addEventListener("click", function () {
       if (navigator.clipboard) navigator.clipboard.writeText(url);
       toast(t("pub.linkCopied"));
     });
+
+    // SEO
+    var descText = (bioArr[0] || quote || name).slice(0, 155);
+    document.title = name + " – Gedenkseite | ewig.me";
+    setMeta("description", descText);
+    if (person) {
+      var yy = (dates.match(/\d{4}/g) || []);
+      setJSONLD({
+        "@context": "https://schema.org", "@type": "Person", name: person.name.de,
+        birthDate: yy[0] || "", deathDate: yy[1] || "", description: (person.bio.de[0] || "").slice(0, 200),
+        image: photo ? (location.origin + location.pathname.replace(/index\.html$/, "") + photo) : "",
+        birthPlace: (infoVal(person, "Geburtsort") || {}).de || "", deathPlace: (infoVal(person, "Sterbeort") || {}).de || "",
+        jobTitle: (infoVal(person, "Beruf") || {}).de || "",
+        sameAs: ["https://de.wikipedia.org/wiki/" + encodeURIComponent(person.name.de.replace(/ /g, "_"))]
+      });
+    } else setJSONLD(null);
   }
 
   /* ---------- CREATE wizard ---------- */
@@ -558,8 +626,8 @@
     } else renderAIResult(id);
   }
   function renderAIResult(id) {
-    var mem = D.memorials[id] || (D.examples.filter(function (e) { return e.id === id; })[0] && D.memorials[id]);
-    var b = mem ? mem.bio[state.lang] : null;
+    var person = personById(id);
+    var b = person ? person.bio[state.lang] : null;
     var formal = b ? b.join(" ") : (state.lang === "de" ? "Ein Leben voller Hingabe und Wärme, das viele Menschen berührt hat …" : "Жизнь, полная тепла и преданности, которая тронула многих …");
     var personal = b ? (b[0] + " " + (state.lang === "de" ? "In Erinnerung an einen Menschen, den wir sehr geliebt haben." : "В память о человеке, которого мы очень любили.")) : formal;
     $("#screen-ai").innerHTML = '<div class="container subpage">' + backLink() +
@@ -635,7 +703,11 @@
     $all(".mobile-nav__panel a").forEach(function (a) { a.addEventListener("click", closeMnav); });
     $all("[data-close-modal]").forEach(function (n) { n.addEventListener("click", function () { $("#modal").classList.remove("is-open"); document.body.classList.remove("no-scroll"); }); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMnav(); });
-    var er = $("#examplesRefresh"); if (er) er.addEventListener("click", function () { toast(t("common.soon")); });
+    var er = $("#examplesRefresh"); if (er) er.addEventListener("click", function () {
+      var o = exOrder().slice();
+      for (var i = o.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = o[i]; o[i] = o[j]; o[j] = tmp; }
+      state.exOrder = o; renderExamples();
+    });
     var sr = $("#storiesRefresh"); if (sr) sr.addEventListener("click", function () { toast(t("common.soon")); });
     var bs = $("#btnSupport"); if (bs) bs.addEventListener("click", function () { toast(t("common.soon")); });
   }
