@@ -67,7 +67,9 @@
   }
   function renderExamples() {
     var g = $("#examplesGrid"); if (!g) return; g.innerHTML = "";
-    exOrder().forEach(function (idx) {
+    var order = exOrder();
+    var shown = state.exExpanded ? order : order.slice(0, 3);
+    shown.forEach(function (idx) {
       var ex = P[idx]; if (!ex) return;
       var ph = personPhoto(ex.id);
       var c = el("article", "ecard");
@@ -80,6 +82,11 @@
         '<div class="ecard__foot"><a class="link-arrow" href="#/page/' + ex.id + '" data-route="/page/' + ex.id + '">' + t("examples.view") + ICON.chevron + '</a></div>';
       g.appendChild(c);
     });
+    var mb = $("#examplesMore");
+    if (mb) {
+      if (order.length <= 3) mb.style.display = "none";
+      else { mb.style.display = ""; mb.textContent = state.exExpanded ? t("examples.less") : t("examples.more").split("%n").join(order.length); }
+    }
   }
 
   function renderFeatures() {
@@ -306,17 +313,17 @@
     var wrap = $("#screen-page");
     var person = personById(id);
     var up = person ? null : findPage(id);
-    var name, dates, born, died, years, quote, photo, infoArr = [], bioArr = [], grave = "", coords = "", video = "", gallery = [], plan = "extended", isUser = false, wikiName = "";
+    var name, dates, born, died, years, quote, photo, infoArr = [], bioArr = [], grave = "", coords = "", mapQuery = "", video = "", gallery = [], plan = "extended", isUser = false, wikiName = "";
 
     if (person) {
       name = L(person.name); dates = person.dates; born = L(person.born); died = L(person.died); years = person.years;
       quote = L(person.quote); infoArr = person.info || []; bioArr = (person.bio && person.bio[state.lang]) || [];
-      grave = L(person.grave); coords = person.coords || ""; video = person.video || "";
+      grave = L(person.grave); coords = person.coords || ""; mapQuery = person.coords || ""; video = person.video || "";
       gallery = (G[id] || []); photo = personPhoto(id); wikiName = person.name.de;
     } else if (up) {
       isUser = true; name = up.name; born = up.born; died = up.died; dates = (up.born || "") + "–" + (up.died || "");
       quote = up.epitaph || ""; photo = (up.photos && up.photos[0]) || up.photo || null; plan = up.plan || "short";
-      grave = up.cemetery || ""; coords = up.coords || ""; bioArr = up.bio ? [up.bio] : [];
+      grave = up.cemetery || ""; coords = up.coords || ""; mapQuery = up.mapQuery || up.coords || ""; bioArr = up.bio ? [up.bio] : [];
       gallery = (up.photos || []).map(function (s) { return { src: s, caption: "" }; });
       if (up.birthplace || up.job) infoArr = [
         up.birthplace ? { k: { de: "Geburtsort", ru: "Место рождения" }, v: { de: up.birthplace, ru: up.birthplace } } : null,
@@ -354,10 +361,12 @@
         html += '<section class="block"><h2 class="block__title">' + t("pub.photos") + '</h2><div class="photos-grid photos-grid--cap">' + tiles + '</div></section>';
       }
     }
-    if (grave) {
-      var mapInner = coords
-        ? '<div class="map-embed"><iframe src="https://maps.google.com/maps?q=' + encodeURIComponent(coords) + '&z=13&output=embed" loading="lazy" title="Karte"></iframe><div class="map-coords">' + esc(grave) + ' · ' + coords + '</div></div>'
-        : '<div class="map-box">' + ICON.pin + '<div class="map-coords">' + esc(grave) + '</div></div>';
+    if (grave || mapQuery) {
+      var mSrc = mapEmbedSrc(mapQuery);
+      var label = esc(grave || "") + (coords && /^\s*-?\d/.test(coords) ? ' · ' + coords : "");
+      var mapInner = mSrc
+        ? '<div class="map-embed"><iframe src="' + mSrc + '" loading="lazy" title="Karte"></iframe>' + (label ? '<div class="map-coords">' + label + '</div>' : "") + '</div>'
+        : '<a class="map-box" href="' + mapLink(mapQuery) + '" target="_blank" rel="noopener">' + ICON.pin + '<div class="map-coords">' + (label || esc(mapQuery)) + '</div></a>';
       html += '<section class="block"><h2 class="block__title">' + t("pub.grave") + '</h2>' + mapInner + '</section>';
     }
     if (wikiName) {
@@ -481,6 +490,19 @@
   /* ---------- EDITOR ---------- */
   function esc(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
   function ytId(url) { var m = String(url || "").match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : ""; }
+  // Google-Maps-Link / Adresse / Koordinaten -> Embed-URL
+  function mapEmbedSrc(input) {
+    var s = String(input || "").trim(); if (!s) return "";
+    var m = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || s.match(/[?&]q=(-?\d+\.\d+),\s*(-?\d+\.\d+)/) ||
+            s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || s.match(/[?&#]ll=(-?\d+\.\d+),(-?\d+\.\d+)/) ||
+            s.match(/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/);
+    if (m) return "https://maps.google.com/maps?q=" + m[1] + "," + m[2] + "&z=14&output=embed";
+    var pm = s.match(/\/maps\/place\/([^\/@?]+)/);
+    if (pm) return "https://maps.google.com/maps?q=" + encodeURIComponent(decodeURIComponent(pm[1]).replace(/\+/g, " ")) + "&z=14&output=embed";
+    if (!/^https?:\/\//i.test(s)) return "https://maps.google.com/maps?q=" + encodeURIComponent(s) + "&z=14&output=embed"; // Adresse/Ort
+    return ""; // Kurzlink ohne Koordinaten -> Fallback (Link)
+  }
+  function mapLink(input) { var s = String(input || "").trim(); return /^https?:\/\//i.test(s) ? s : ("https://maps.google.com/maps?q=" + encodeURIComponent(s)); }
   function esec(title, inner) { return '<div class="ed-section"><div class="ed-section__head"><div class="ed-section__title">' + title + '</div></div>' + inner + '</div>'; }
 
   function editorPhotos(page) {
@@ -509,6 +531,9 @@
     var info = [page.birthplace, page.job].filter(Boolean).join(" · ");
     var gal = (page.photos || []).slice(0, 6).map(function (p) { return '<div style="background-image:url(' + p + ')"></div>'; }).join("");
     var links = (page.links || []).filter(function (l) { return l.url || l.name; }).map(function (l) { return '<span class="pv-link">' + esc(l.name || l.url) + '</span>'; }).join("");
+    var qrUrl = location.origin + location.pathname + "#/page/" + (page.id || "neu");
+    var mq = page.mapQuery || page.coords || "";
+    var mapText = page.cemetery || (/^https?:\/\//i.test(mq) ? "" : mq) || (mq ? "Standort" : "");
     return '<div class="pv">' +
       (photo ? '<div class="pv-photo"><img src="' + photo + '"></div>' : '<div class="pv-photo pv-photo--empty">' + portrait(page.name || "") + '</div>') +
       '<div class="pv-name">' + esc(page.name || "—") + '</div>' +
@@ -516,9 +541,11 @@
       (page.epitaph ? '<div class="pv-epi">«' + esc(page.epitaph) + '»</div>' : '') +
       (info ? '<div class="pv-sub">' + t("pub.info") + '</div><div class="pv-info">' + esc(info) + '</div>' : '') +
       (page.bio ? '<div class="pv-sub">' + t("pub.bio") + '</div><div class="pv-bio">' + esc(page.bio) + '</div>' : '') +
+      (vid ? '<div class="pv-sub">' + t("pub.media") + '</div><div class="pv-video" style="background-image:url(https://img.youtube.com/vi/' + vid + '/hqdefault.jpg)"><span class="pv-play">' + ICON.play + '</span></div>' : '') +
       (gal ? '<div class="pv-sub">' + t("pub.photos") + '</div><div class="pv-gal">' + gal + '</div>' : '') +
-      (vid ? '<div class="pv-sub">' + t("pub.media") + '</div><div class="pv-video" style="background-image:url(https://img.youtube.com/vi/' + vid + '/mqdefault.jpg)"><span class="pv-play">' + ICON.play + '</span></div>' : '') +
+      (mapText ? '<div class="pv-sub">' + t("pub.grave") + '</div><div class="pv-map"><span class="pv-map__pin">' + ICON.pin + '</span><span>' + esc(mapText) + '</span></div>' : '') +
       (links ? '<div class="pv-sub">' + t("pub.links") + '</div><div class="pv-links">' + links + '</div>' : '') +
+      '<div class="pv-sub">' + t("pub.qr") + '</div><div class="pv-qr"><img src="' + makeQR(qrUrl) + '" alt="QR"><button type="button" class="pv-sharebtn">' + t("pub.share") + '</button></div>' +
       '</div>';
   }
   function updatePreview() { var b = $("#previewBody"); if (b && state.editing) b.innerHTML = editorPreview(state.editing); }
@@ -547,8 +574,9 @@
       esec(t("ed.media"), '<p class="ed-hint">' + t("ed.videoHint") + '</p><div id="edVideos">' + editorVideos(page) + '</div>') +
       esec(t("ed.links"), '<div id="edLinks">' + editorLinks(page) + '</div>') +
       esec(t("ed.grave"),
-        '<div class="form-grid"><div class="field"><label>' + t("ed.cemetery") + '</label><input id="edCem" value="' + esc(page.cemetery) + '"></div>' +
-        '<div class="field"><label>' + t("ed.coords") + '</label><input id="edCoords" value="' + esc(page.coords) + '" placeholder="48.15, 16.44"></div></div>') +
+        '<div class="field"><label>' + t("ed.cemetery") + '</label><input id="edCem" value="' + esc(page.cemetery) + '"></div>' +
+        '<div class="field" style="margin-top:16px"><label>' + t("ed.mapLink") + '</label><input id="edMapQuery" value="' + esc(page.mapQuery || page.coords || "") + '" placeholder="' + t("ed.mapLinkPh") + '"><div class="field__err"></div></div>' +
+        '<p class="ed-hint" style="margin:8px 0 0">' + t("ed.mapHint") + '</p>') +
       esec(t("ed.qr"),
         '<div class="qr-block"><div class="qr-canvas" style="width:120px;height:120px"><img src="' + makeQR(location.origin + location.pathname + "#/page/" + id) + '"></div>' +
         '<div style="flex:1;min-width:200px">' + toggleRow("edPub", t("ed.public"), page.pub !== false) + toggleRow("edIdx", t("ed.index"), true) + toggleRow("edPubl", t("ed.publish"), true) + '</div></div>') +
@@ -569,7 +597,7 @@
     function live(sel, key) { var e = $(sel); if (e) e.addEventListener("input", function () { p[key] = e.value; updatePreview(); }); }
     live("#edName", "name"); live("#edBorn", "born"); live("#edDied", "died");
     live("#edBirthplace", "birthplace"); live("#edJob", "job"); live("#edEpitaph", "epitaph"); live("#edBio", "bio");
-    live("#edCem", "cemetery"); live("#edCoords", "coords");
+    live("#edCem", "cemetery"); live("#edMapQuery", "mapQuery");
     // фото: добавить
     var pf = $("#edPhotoFile");
     if (pf) pf.addEventListener("change", function () {
@@ -708,6 +736,7 @@
       for (var i = o.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = o[i]; o[i] = o[j]; o[j] = tmp; }
       state.exOrder = o; renderExamples();
     });
+    var mb = $("#examplesMore"); if (mb) mb.addEventListener("click", function () { state.exExpanded = !state.exExpanded; renderExamples(); if (!state.exExpanded) { var s = $("#examples"); if (s) s.scrollIntoView(); } });
     var sr = $("#storiesRefresh"); if (sr) sr.addEventListener("click", function () { toast(t("common.soon")); });
     var bs = $("#btnSupport"); if (bs) bs.addEventListener("click", function () { toast(t("common.soon")); });
   }

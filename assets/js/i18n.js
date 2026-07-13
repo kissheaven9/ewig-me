@@ -23,6 +23,8 @@ window.I18N = {
 
     "examples.refresh": "Aktualisieren",
     "examples.view": "jetzt Gedenkseite ansehen",
+    "examples.more": "Alle %n Gedenkseiten ansehen",
+    "examples.less": "Weniger anzeigen",
 
     "keep.title": "Was kannst du auf einer Erinnerungsseite bewahren?",
     "keep.lead": "Halte die schönsten Erinnerungen an deinen geliebten Menschen fest.",
@@ -89,6 +91,8 @@ window.I18N = {
     "ed.photosHint": "Wählen und fügen Sie bis zu 10 Fotos hinzu", "ed.addPhoto": "Fotos hinzufügen",
     "ed.links": "Externe Links", "ed.addMore": "Weitere hinzufügen",
     "ed.grave": "Grabstätte", "ed.cemetery": "Name des Friedhofs", "ed.coords": "Koordinaten",
+    "ed.mapLink": "Google-Maps-Link oder Adresse", "ed.mapLinkPh": "https://maps.google.com/… oder Waldfriedhof München",
+    "ed.mapHint": "Füge einfach einen Google-Maps-Link oder eine Adresse ein – die Karte wird automatisch erkannt.",
     "ed.qr": "QR-Code dieser Seite", "ed.public": "Öffentlich", "ed.index": "Indexieren",
     "ed.publish": "Veröffentlichen", "ed.save": "Änderungen speichern", "ed.preview": "Vorschau",
     "ed.saved": "Änderungen gespeichert",
@@ -141,6 +145,8 @@ window.I18N = {
 
     "examples.refresh": "Обновить",
     "examples.view": "Посмотреть страницу",
+    "examples.more": "Показать все %n страниц",
+    "examples.less": "Свернуть",
 
     "keep.title": "Что можно хранить на странице памяти?",
     "keep.lead": "Сохраните самые тёплые воспоминания о близком человеке.",
@@ -207,6 +213,8 @@ window.I18N = {
     "ed.photosHint": "Выберите и добавьте до 10 фото", "ed.addPhoto": "Добавить фото",
     "ed.links": "Внешние ссылки", "ed.addMore": "Добавить ещё",
     "ed.grave": "Место захоронения", "ed.cemetery": "Название кладбища", "ed.coords": "Координаты",
+    "ed.mapLink": "Ссылка Google Maps или адрес", "ed.mapLinkPh": "https://maps.google.com/… или Ваганьковское кладбище",
+    "ed.mapHint": "Просто вставьте ссылку Google Maps или адрес — карта определится автоматически.",
     "ed.qr": "QR-код этой страницы", "ed.public": "Доступно для всех", "ed.index": "Индексировать",
     "ed.publish": "Публиковать", "ed.save": "Сохранить изменения", "ed.preview": "Предпросмотр",
     "ed.saved": "Изменения сохранены",
