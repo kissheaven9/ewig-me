@@ -350,6 +350,8 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .pub-hero__dates { font-family: var(--font-display); font-size: 48px; color: var(--accent); margin: 12px 0; }
 .pub-hero__dates span { font-family: var(--font); font-size: 14px; color: var(--ink-soft); }
 .pub-hero__epitaph { font-size: 15px; font-style: italic; color: var(--ink-body); max-width: 560px; }
+/* Kurzbeschreibung (kein echtes Zitat) — ohne Kursiv/Anführungszeichen, damit sie nicht als Aussage der Person gelesen wird */
+.pub-hero__epitaph--plain { font-style: normal; color: var(--ink-soft); }
 .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .info-cell { border-left: 2px solid var(--accent-soft); padding-left: 16px; }
 .info-cell dt { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }

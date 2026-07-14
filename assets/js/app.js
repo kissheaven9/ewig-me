@@ -78,7 +78,7 @@
         '<div class="hp__body">' +
           '<div class="hp__name">' + L(p.name) + '</div>' +
           '<div class="hp__dates">' + p.dates + '</div>' +
-          '<p class="hp__quote">«' + (L(p.quote) || blurb(p)) + '»</p>' +
+          '<p class="hp__quote">' + (p.quoteReal === false ? (L(p.quote) || blurb(p)) : '«' + (L(p.quote) || blurb(p)) + '»') + '</p>' +
           '<div class="hp__chips">' + chips + '</div>' +
           '<span class="hp__view link-arrow">' + t("teaser.viewPage") + ICON.chevron + '</span>' +
         '</div>' +
@@ -346,10 +346,13 @@
     var person = personById(id);
     var up = person ? null : findPage(id);
     var name, dates, born, died, years, quote, photo, infoArr = [], bioArr = [], grave = "", coords = "", mapQuery = "", video = "", gallery = [], plan = "extended", isUser = false, wikiName = "";
+    /* quoteReal=false → Kurzbeschreibung, KEIN Zitat: darf nicht in «…» stehen (sonst erfundene Aussage) */
+    var quoteReal = true;
 
     if (person) {
       name = L(person.name); dates = person.dates; born = L(person.born); died = L(person.died); years = person.years;
-      quote = L(person.quote); infoArr = person.info || []; bioArr = (person.bio && person.bio[state.lang]) || [];
+      quote = L(person.quote); quoteReal = person.quoteReal !== false;
+      infoArr = person.info || []; bioArr = (person.bio && person.bio[state.lang]) || [];
       grave = L(person.grave); coords = person.coords || ""; mapQuery = person.coords || ""; video = person.video || "";
       gallery = (G[id] || []); photo = personPhoto(id); wikiName = person.name.de;
     } else if (up) {
@@ -371,7 +374,7 @@
         '<div class="pub-hero__photo">' + photoHtml + '</div>' +
         '<div><h1 class="pub-hero__name">' + esc(name) + '</h1>' +
         '<div class="pub-hero__dates">' + dates + (years ? ' <span>(' + years + ' ' + t("pub.years") + ')</span>' : '') + '</div>' +
-        (quote ? '<p class="pub-hero__epitaph">«' + esc(quote) + '»</p>' : '') + '</div>' +
+        (quote ? '<p class="pub-hero__epitaph' + (quoteReal ? '' : ' pub-hero__epitaph--plain') + '">' + (quoteReal ? '«' + esc(quote) + '»' : esc(quote)) + '</p>' : '') + '</div>' +
       '</div>';
 
     if (infoArr.length) {
