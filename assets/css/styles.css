@@ -474,6 +474,14 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .ai-q { font-size: 18px; color: var(--ink-title); line-height: 1.5; margin-bottom: 22px; }
 .ai-track { height: 8px; background: #f0eae2; border-radius: 8px; margin-bottom: 26px; overflow: hidden; }
 .ai-track span { display: block; height: 100%; background: var(--accent-fill); border-radius: 8px; transition: width .3s var(--ease); }
+.ai-card textarea {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink-title);
+  padding: 14px 18px; border: 1.5px solid var(--accent-soft); border-radius: var(--r-card);
+  background: #fff; min-height: 120px; resize: vertical; transition: border-color .2s, box-shadow .2s;
+  -webkit-appearance: none; appearance: none; overflow-wrap: anywhere; word-break: break-word;
+}
+.ai-card textarea::placeholder { color: var(--accent-soft); }
+.ai-card textarea:focus { border-color: var(--accent); box-shadow: var(--ring); outline: none; }
 .ai-variants { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .ai-variant { background: var(--card); border-radius: var(--r-card); padding: 26px; }
 .ai-variant h4 { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: 18px; margin-bottom: 14px; }

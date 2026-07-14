@@ -14,7 +14,7 @@
   function infoVal(person, keyDe) { var f = (person.info || []).filter(function (x) { return x.k.de === keyDe; })[0]; return f ? f.v : null; }
 
   /* ИИ-биограф: URL прокси (Cloudflare Worker с ключом OpenAI). Пусто = имитация. */
-  var AI_PROXY_DEFAULT = ""; /* <-- сюда вставить URL воркера после деплоя, напр. https://ewig-ai.<sub>.workers.dev */
+  var AI_PROXY_DEFAULT = "https://ewig-ai.kissheaven99.workers.dev";
   var AI_PROXY = (AI_PROXY_DEFAULT || localStorage.getItem("ewig_ai_proxy") || "").trim();
   function generateBio(name, answers, cb) {
     if (!AI_PROXY) { cb(null); return; }
