@@ -13,6 +13,18 @@
   function personPhoto(id) { var g = G[id]; return (g && g[0] && g[0].src) || null; }
   function infoVal(person, keyDe) { var f = (person.info || []).filter(function (x) { return x.k.de === keyDe; })[0]; return f ? f.v : null; }
 
+  /* ИИ-биограф: URL прокси (Cloudflare Worker с ключом OpenAI). Пусто = имитация. */
+  var AI_PROXY_DEFAULT = ""; /* <-- сюда вставить URL воркера после деплоя, напр. https://ewig-ai.<sub>.workers.dev */
+  var AI_PROXY = (AI_PROXY_DEFAULT || localStorage.getItem("ewig_ai_proxy") || "").trim();
+  function generateBio(name, answers, cb) {
+    if (!AI_PROXY) { cb(null); return; }
+    var done = false, to = setTimeout(function () { if (!done) { done = true; cb(null); } }, 30000);
+    fetch(AI_PROXY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, answers: answers, lang: state.lang }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (done) return; done = true; clearTimeout(to); cb(d && (d.formal || d.personal) ? d : null); })
+      .catch(function () { if (done) return; done = true; clearTimeout(to); cb(null); });
+  }
+
   function $(s, c) { return (c || document).querySelector(s); }
   function $all(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
   function el(t, cls, html) { var e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
@@ -694,15 +706,38 @@
     } else renderAIResult(id);
   }
   function renderAIResult(id) {
-    var person = personById(id);
-    var b = person ? person.bio[state.lang] : null;
-    var formal = b ? b.join(" ") : (state.lang === "de" ? "Ein Leben voller Hingabe und Wärme, das viele Menschen berührt hat …" : "Жизнь, полная тепла и преданности, которая тронула многих …");
-    var personal = b ? (b[0] + " " + (state.lang === "de" ? "In Erinnerung an einen Menschen, den wir sehr geliebt haben." : "В память о человеке, которого мы очень любили.")) : formal;
-    $("#screen-ai").innerHTML = '<div class="container subpage">' + backLink() +
-      '<h1 class="h-section" style="margin-bottom:24px">' + t("ai.title") + '</h1>' +
-      '<div class="ai-variants"><div class="ai-variant"><h4>' + t("ai.formal") + '</h4><p>' + formal + '</p><button class="btn btn--primary btn--block" data-route="/editor/' + id + '"><span>' + t("ai.choose") + '</span></button></div>' +
-      '<div class="ai-variant"><h4>' + t("ai.personal") + '</h4><p>' + personal + '</p><button class="btn btn--primary btn--block" data-route="/editor/' + id + '"><span>' + t("ai.choose") + '</span></button></div></div></div>';
-    state.ai = null;
+    var wrap = $("#screen-ai");
+    var person = personById(id), up = person ? null : findPage(id);
+    var name = person ? person.name.de : (up ? up.name : "");
+    var answers = (state.ai && state.ai.answers) || [];
+    // экран загрузки
+    wrap.innerHTML = '<div class="container subpage">' + backLink() +
+      '<h1 class="h-section" style="margin-bottom:20px">' + t("ai.title") + '</h1>' +
+      '<div class="ai-card card-box" style="text-align:center"><div class="ai-progress">' + t("ai.generating") + '</div><div class="ai-track"><span style="width:100%;transition:none"></span></div></div></div>';
+    generateBio(name, answers, function (res) {
+      var formal, personal;
+      if (res && (res.formal || res.personal)) { formal = res.formal || res.personal; personal = res.personal || res.formal; }
+      else {
+        var b = person ? person.bio[state.lang] : null;
+        formal = b ? b.join(" ") : (state.lang === "de" ? "Ein Leben voller Hingabe und Wärme, das viele Menschen berührt hat." : "Жизнь, полная тепла и преданности, которая тронула многих.");
+        personal = b ? (b[0] + " " + (state.lang === "de" ? "In Erinnerung an einen Menschen, den wir sehr geliebt haben." : "В память о человеке, которого мы очень любили.")) : formal;
+      }
+      state.aiResult = { formal: formal, personal: personal };
+      wrap.innerHTML = '<div class="container subpage">' + backLink() +
+        '<h1 class="h-section" style="margin-bottom:24px">' + t("ai.title") + '</h1>' +
+        '<div class="ai-variants"><div class="ai-variant"><h4>' + t("ai.formal") + '</h4><p>' + esc(formal) + '</p><button class="btn btn--primary btn--block" data-aichoose="formal" data-aiid="' + id + '"><span>' + t("ai.choose") + '</span></button></div>' +
+        '<div class="ai-variant"><h4>' + t("ai.personal") + '</h4><p>' + esc(personal) + '</p><button class="btn btn--primary btn--block" data-aichoose="personal" data-aiid="' + id + '"><span>' + t("ai.choose") + '</span></button></div></div></div>';
+      $all("[data-aichoose]").forEach(function (bt) {
+        bt.addEventListener("click", function () {
+          var text = (state.aiResult || {})[bt.getAttribute("data-aichoose")] || "";
+          var pid = bt.getAttribute("data-aiid");
+          if (state.editing && state.editing.id === pid) state.editing.bio = text;
+          if (findPage(pid)) updatePage(pid, { bio: text });
+          go("/editor/" + pid);
+        });
+      });
+      state.ai = null;
+    });
   }
 
   /* ---------- CABINET ---------- */
