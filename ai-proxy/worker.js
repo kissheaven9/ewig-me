@@ -4,7 +4,7 @@
    Деплой и настройка — см. README.md в этой папке.
    ========================================================================== */
 
-const ALLOWED = ["https://kissheaven9.github.io"];
+const ALLOWED = ["https://ewig.me", "https://www.ewig.me", "https://kissheaven9.github.io"];
 
 export default {
   async fetch(request, env) {

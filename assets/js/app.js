@@ -511,7 +511,7 @@
     var days = "", months = "", years = "";
     for (var d = 1; d <= 31; d++) days += '<option>' + d + '</option>';
     for (var m = 1; m <= 12; m++) months += '<option>' + m + '</option>';
-    for (var y = 2024; y >= 1900; y--) years += '<option>' + y + '</option>';
+    for (var y = new Date().getFullYear(); y >= 1900; y--) years += '<option>' + y + '</option>';
     return '<div class="field"><label>' + label + '</label><div class="field-row">' +
       '<select id="' + idp + '_d"><option value="" disabled selected>' + t("cr.day") + '</option>' + days + '</select>' +
       '<select id="' + idp + '_m"><option value="" disabled selected>' + t("cr.month") + '</option>' + months + '</select>' +
@@ -796,6 +796,15 @@
   function bind() {
     $all("#langSwitch button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); }); });
     document.addEventListener("click", function (e) {
+      var lg = e.target.closest("[data-legal]");
+      if (lg) {
+        e.preventDefault();
+        openModal('<button class="modal__close" data-x>' + ICON.close + '</button>' +
+          '<h3 class="modal__title">' + t("legal." + lg.getAttribute("data-legal")) + '</h3>' +
+          '<p style="color:var(--ink-body);line-height:1.6">' + t("legal.placeholder") + '</p>');
+        var x = $("#modalDialog [data-x]"); if (x) x.addEventListener("click", closeModal);
+        return;
+      }
       var r = e.target.closest("[data-route]");
       if (r) { e.preventDefault(); go(r.getAttribute("data-route")); }
     });

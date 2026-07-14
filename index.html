@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Bebas+Neue&family=Russo+One&family=Montez&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=22">
+  <link rel="stylesheet" href="assets/css/styles.css?v=23">
 </head>
 <body>
 
@@ -198,6 +198,15 @@
           <button class="btn btn--primary" id="btnSupport"><span data-i18n="footer.write">Schreiben Sie uns</span></button>
         </div>
       </div>
+      <div class="footer__legal">
+        <span class="footer__copy" data-i18n="footer.copyright"></span>
+        <nav class="footer__legal-links">
+          <a href="#/" data-legal="impressum" data-i18n="legal.impressum">Impressum</a>
+          <a href="#/" data-legal="privacy" data-i18n="legal.privacy">Datenschutz</a>
+          <a href="#/" data-legal="terms" data-i18n="legal.terms">AGB</a>
+          <a href="#/" data-route="/telegram" data-i18n="legal.contact">Kontakt</a>
+        </nav>
+      </div>
     </div>
     <div class="footer__fp"><img src="assets/img/fingerprint.png" alt=""></div>
   </footer>
@@ -205,15 +214,21 @@
   <div class="mobile-nav" id="mobileNav">
     <div class="modal__overlay" data-close-mnav></div>
     <div class="mobile-nav__panel">
+      <a href="#/" class="mobile-nav__brand" data-route="/" aria-label="ewig.me"><img src="assets/img/logo-wordmark.png" alt="ewig.me"></a>
       <a href="#examples" data-i18n="nav.examples">Beispiele</a>
       <a href="#how" data-i18n="nav.how">So funktioniert’s</a>
       <a href="#plans" data-i18n="nav.prices">Preise</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
       <a href="#press" data-i18n="nav.about">Über uns</a>
       <a href="#/" data-route="/video" data-i18n="nav.video">Videoanleitung</a>
-      <a href="#/" data-route="/telegram" data-i18n="footer.write">Kontakt (Telegram)</a>
       <a href="#/" data-route="/cabinet" data-i18n="footer.cabinet">Mein Konto</a>
-      <button class="btn btn--primary btn--block" style="margin-top:20px" data-route="/create"><span data-i18n="cta.create">Seite erstellen</span></button>
+      <button class="btn btn--primary btn--block" style="margin-top:16px" data-route="/create"><span data-i18n="cta.create">Seite erstellen</span></button>
+      <div class="mobile-nav__legal">
+        <a href="#/" data-route="/telegram" data-i18n="legal.contact">Kontakt</a>
+        <a href="#/" data-legal="impressum" data-i18n="legal.impressum">Impressum</a>
+        <a href="#/" data-legal="privacy" data-i18n="legal.privacy">Datenschutz</a>
+        <a href="#/" data-legal="terms" data-i18n="legal.terms">AGB</a>
+      </div>
     </div>
   </div>
 
@@ -221,9 +236,9 @@
   <div class="toast-wrap" id="toastWrap"></div>
 
   <script src="assets/js/qrcode.js"></script>
-  <script src="assets/js/i18n.js?v=18"></script>
+  <script src="assets/js/i18n.js?v=19"></script>
   <script src="assets/js/data.js?v=15"></script>
   <script src="assets/js/people.js?v=15"></script>
-  <script src="assets/js/app.js?v=22"></script>
+  <script src="assets/js/app.js?v=23"></script>
 </body>
 </html>
