@@ -753,7 +753,7 @@
         (p.plan !== "extended" ? '<button class="btn btn--primary btn--sm" data-route="/plaque/' + p.id + '"><span>' + t("cab.expand") + '</span></button>' : '') +
         '</div></div></div>';
     }).join("");
-    var newCard = '<div class="cab-new" data-route="/create"><div><div class="upload__circle" style="margin:0 auto 12px">' + ICON.plus + '</div><span style="font-weight:600;font-size:14px">' + t("cab.newPage") + '</span></div></div>';
+    var newCard = '<div class="cab-new" data-route="/create"><span class="cab-new__ic">' + ICON.plus + '</span><span class="cab-new__txt">' + t("cab.newPage") + '</span></div>';
     wrap.innerHTML = '<div class="container subpage">' + backLink() + '<h1 class="h-section" style="margin-bottom:28px">' + t("cab.title") + '</h1>' +
       (pages.length ? '' : '<p style="color:var(--ink-soft);margin-bottom:24px">' + t("cab.empty") + '</p>') +
       '<div class="cab-grid">' + cards + newCard + '</div></div>';

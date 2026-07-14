@@ -283,19 +283,19 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .footer__grid { display: grid; grid-template-columns: 1.1fr 1fr 1.2fr; gap: 40px; align-items: start; position: relative; z-index: 2; }
 .footer__badge { height: 58px; width: auto; }
 .footer__links { display: flex; flex-direction: column; gap: 14px; }
-.footer__links a { font-size: 14px; color: #fff; font-weight: 500; transition: opacity .2s; }
-.footer__links a:first-child { font-weight: 700; letter-spacing: .04em; }
-.footer__links a:hover { opacity: .7; }
+.footer__links a { font-size: 14px; color: var(--ink-head); font-weight: 500; transition: color .2s; }
+.footer__links a:first-child { font-weight: 700; letter-spacing: .04em; color: var(--accent-dark); }
+.footer__links a:hover { color: var(--accent); }
 .footer__support { background: #fff; border-radius: var(--r-card); padding: 28px; }
 .footer__support h4 { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: 1.25rem; letter-spacing: .02em; margin-bottom: 12px; }
 .footer__support p { font-size: 14px; color: var(--ink-body); margin-bottom: 20px; }
 .footer__fp { position: absolute; left: 34%; bottom: -60px; width: 200px; max-width: 40%; opacity: .35; pointer-events: none; }
 .footer__fp img { width: 100%; }
-.footer__legal { position: relative; z-index: 2; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
-.footer__copy { font-size: 13px; color: rgba(255,255,255,.7); }
+.footer__legal { position: relative; z-index: 2; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(90,90,89,.18); display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.footer__copy { font-size: 13px; color: var(--ink-soft); }
 .footer__legal-links { display: flex; gap: 22px; flex-wrap: wrap; }
-.footer__legal-links a { font-size: 13px; color: rgba(255,255,255,.75); transition: opacity .2s; }
-.footer__legal-links a:hover { opacity: 1; color: #fff; }
+.footer__legal-links a { font-size: 13px; color: var(--ink-head); transition: color .2s; }
+.footer__legal-links a:hover { color: var(--accent); }
 
 /* -------- Modal / toast / mobile nav -------- */
 .modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -506,8 +506,12 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .cab-card__dates { font-family: var(--font-display); font-size: 28px; color: var(--accent); margin: 4px 0 8px; }
 .cab-card__tag { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--accent-fill); border-radius: 20px; padding: 4px 12px; margin-bottom: 12px; }
 .cab-card__actions { margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap; }
-.cab-new { border: 2px dashed var(--accent-soft); border-radius: var(--r-card); display: grid; place-items: center; min-height: 200px; text-align: center; color: var(--accent); cursor: pointer; transition: border-color .2s; }
-.cab-new:hover { border-color: var(--accent); }
+.cab-new { border: 2px dashed var(--accent-soft); border-radius: var(--r-card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 200px; text-align: center; padding: 24px; cursor: pointer; transition: border-color .2s, background .2s; }
+.cab-new:hover { border-color: var(--accent); background: rgba(187,145,116,.05); }
+.cab-new__ic { width: 54px; height: 54px; border-radius: 50%; background: var(--accent-fill); color: #fff; display: grid; place-items: center; flex: none; transition: background .2s; }
+.cab-new__ic svg { width: 26px; height: 26px; }
+.cab-new:hover .cab-new__ic { background: var(--accent-dark); }
+.cab-new__txt { font-weight: 600; font-size: 15px; color: var(--accent-dark); }
 
 /* --- Plaque / Checkout --- */
 .opt-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
