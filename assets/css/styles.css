@@ -502,6 +502,21 @@ h1,h2,h3 { margin: 0; font-weight: 400; }
 .ai-variant h4 { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: 18px; margin-bottom: 14px; }
 .ai-variant p { font-size: 14px; color: var(--ink-body); line-height: 1.6; margin-bottom: 18px; }
 
+/* --- Blogartikel (Volltext) --- */
+.post { max-width: 760px; margin-inline: auto; }
+.post__label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.post__title { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: clamp(26px,3.4vw,40px); line-height: 1.18; letter-spacing: .01em; }
+.post__lead { margin-top: 18px; font-size: 17px; line-height: 1.6; color: var(--ink-title); }
+.post__hero { margin: 30px 0 34px; border-radius: 18px; overflow: hidden; aspect-ratio: 16/9; background: var(--card); }
+.post__hero img { width: 100%; height: 100%; object-fit: cover; }
+.post__body h2 { font-weight: 400; text-transform: uppercase; color: var(--ink-head); font-size: clamp(20px,2.2vw,26px); line-height: 1.25; margin: 38px 0 14px; }
+.post__body p { font-size: 16px; line-height: 1.75; color: var(--ink-body); margin: 0 0 16px; }
+.post__body ul { margin: 0 0 20px; padding-left: 0; list-style: none; }
+.post__body li { position: relative; padding-left: 26px; margin-bottom: 10px; font-size: 16px; line-height: 1.7; color: var(--ink-body); }
+.post__body li::before { content: ""; position: absolute; left: 6px; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-fill); }
+.post__body, .post__title, .post__lead { overflow-wrap: anywhere; word-break: break-word; }
+#screen-article .block { margin-top: 56px; }
+
 /* --- Cabinet --- */
 .cab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; }
 .cab-card { background: var(--card); border-radius: var(--r-card); padding: 24px; display: flex; gap: 20px; }

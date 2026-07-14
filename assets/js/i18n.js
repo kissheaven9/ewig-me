@@ -47,6 +47,8 @@ window.I18N = {
 
     "articles.title": "Artikel und Neuigkeiten",
     "articles.label": "Artikel:",
+    "articles.readMin": "Min. Lesezeit",
+    "articles.more": "Weitere Artikel",
 
     "faq.title": "Häufige Fragen",
 
@@ -176,6 +178,8 @@ window.I18N = {
 
     "articles.title": "Статьи и новости",
     "articles.label": "Статья:",
+    "articles.readMin": "мин. чтения",
+    "articles.more": "Другие статьи",
 
     "faq.title": "Частые вопросы",
 

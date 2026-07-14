@@ -197,13 +197,64 @@
     g.innerHTML = card("short", D.plans.short, false) + card("extended", D.plans.extended, true);
   }
 
+  var ART = window.ARTICLES || [];
+  function articleById(id) { return ART.filter(function (a) { return a.id === id; })[0] || null; }
+
   function renderArticles() {
     var g = $("#articlesGrid"); if (!g) return; g.innerHTML = "";
-    D.articles.forEach(function (a) {
-      var c = el("a", "acard"); c.href = "#";
+    ART.forEach(function (a) {
+      var c = el("a", "acard");
+      c.href = "#/artikel/" + a.id;
+      c.setAttribute("data-route", "/artikel/" + a.id);
       c.innerHTML = '<img src="' + (a.img || "assets/img/article-photo.png") + '" alt="' + esc(L(a.title)) + '" loading="lazy">' +
         '<div class="acard__body"><div class="acard__label">' + t("articles.label") + '</div><div class="acard__title">' + L(a.title) + '</div></div>';
       g.appendChild(c);
+    });
+  }
+
+  /* ---------- Blogartikel (Volltext) ---------- */
+  function renderArticle(id) {
+    var wrap = $("#screen-article"); if (!wrap) return;
+    var a = articleById(id);
+    if (!a) { wrap.innerHTML = '<div class="container subpage">' + backLink() + '<p>' + t("common.soon") + '</p></div>'; return; }
+
+    var blocks = (a.body && a.body[state.lang]) || (a.body && a.body.de) || [];
+    var html = blocks.map(function (b) {
+      if (b.t === "h2") return '<h2>' + esc(b.x) + '</h2>';
+      if (b.t === "ul") return '<ul>' + (b.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join("") + '</ul>';
+      return '<p>' + esc(b.x || "") + '</p>';
+    }).join("");
+
+    var others = ART.filter(function (x) { return x.id !== a.id; }).slice(0, 3).map(function (x) {
+      return '<a class="acard" href="#/artikel/' + x.id + '" data-route="/artikel/' + x.id + '">' +
+        '<img src="' + (x.img || "assets/img/article-photo.png") + '" alt="' + esc(L(x.title)) + '" loading="lazy">' +
+        '<div class="acard__body"><div class="acard__label">' + t("articles.label") + '</div><div class="acard__title">' + L(x.title) + '</div></div></a>';
+    }).join("");
+
+    wrap.innerHTML = '<div class="container subpage">' + backLink() +
+      '<article class="post">' +
+        '<div class="post__label">' + t("articles.label").replace(/:\s*$/, "") + ' · ' + (a.readMin || 8) + ' ' + t("articles.readMin") + '</div>' +
+        '<h1 class="post__title">' + esc(L(a.title)) + '</h1>' +
+        (a.lead ? '<p class="post__lead">' + esc(L(a.lead)) + '</p>' : '') +
+        '<div class="post__hero"><img src="' + (a.img || "assets/img/article-photo.png") + '" alt="' + esc(L(a.title)) + '"></div>' +
+        '<div class="post__body">' + html + '</div>' +
+      '</article>' +
+      '<section class="block"><h2 class="block__title">' + t("articles.more") + '</h2><div class="cards4">' + others + '</div></section>' +
+      '</div>';
+    window.scrollTo(0, 0);
+
+    /* SEO */
+    var seo = a.seo || {};
+    document.title = (seo.title ? L(seo.title) : L(a.title)) + " | ewig.me";
+    setMeta("description", seo.description ? L(seo.description) : L(a.lead || a.title));
+    var url = location.origin + location.pathname + "#/artikel/" + a.id;
+    setJSONLD({
+      "@context": "https://schema.org", "@type": "Article",
+      headline: L(a.title).slice(0, 110),
+      description: seo.description ? L(seo.description) : "",
+      image: location.origin + location.pathname.replace(/index\.html$/, "") + (a.img || ""),
+      inLanguage: state.lang, mainEntityOfPage: url,
+      publisher: { "@type": "Organization", name: "ewig.me" }
     });
   }
 
@@ -300,6 +351,7 @@
     if (!path || path === "/" || path === "") { showScreen("home"); return; }
     var p = path.replace(/^\//, "").split("/"), seg = p[0], id = p[1];
     if (seg === "page") { renderPublic(id); showScreen("page"); }
+    else if (seg === "artikel") { renderArticle(id); showScreen("article"); }
     else if (seg === "create") { renderCreate(); showScreen("create"); }
     else if (seg === "editor") { renderEditor(id); showScreen("editor"); }
     else if (seg === "ai") { renderAI(id); showScreen("ai"); }
