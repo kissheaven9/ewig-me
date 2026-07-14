@@ -614,8 +614,9 @@
       esec(t("ed.grave"),
         '<div class="field"><label>' + t("ed.cemetery") + '</label><input id="edCem" value="' + esc(page.cemetery) + '"></div>' +
         '<div class="field" style="margin-top:16px"><label>' + t("ed.mapLink") + '</label><input id="edMapQuery" value="' + esc(page.mapQuery || page.coords || "") + '" placeholder="' + t("ed.mapLinkPh") + '"><div class="field__err"></div></div>' +
-        '<p class="ed-hint" style="margin:8px 0 0">' + t("ed.mapHint") + '</p>') +
-      esec(t("ed.qr"),
+        '<p class="ed-hint" style="margin:8px 0 0">' + t("ed.mapHint") + '</p>');
+
+    var tail = esec(t("ed.qr"),
         '<div class="qr-block"><div class="qr-canvas" style="width:120px;height:120px"><img src="' + makeQR(location.origin + location.pathname + "#/page/" + id) + '"></div>' +
         '<div style="flex:1;min-width:200px">' + toggleRow("edPub", t("ed.public"), page.pub !== false) + toggleRow("edIdx", t("ed.index"), true) + toggleRow("edPubl", t("ed.publish"), true) + '</div></div>') +
       '<div class="ed-actions"><button class="btn btn--primary" id="edSave"><span>' + t("ed.save") + '</span></button>' +
@@ -625,7 +626,8 @@
       '<h1 class="h-section" style="margin-bottom:6px">' + t("ed.titleExt") + '</h1>' +
       '<p style="color:var(--ink-soft);font-size:14px;margin-bottom:26px">' + t("ed.avgTime") + '</p>' +
       '<div class="editor-split"><div class="editor-form">' + form + '</div>' +
-      '<div class="editor-preview"><div class="phone"><div class="phone__scroll"><div id="previewBody"></div></div></div></div></div></div>';
+      '<div class="editor-preview"><div class="phone"><div class="phone__scroll"><div id="previewBody"></div></div></div></div></div>' +
+      '<div class="editor-tail">' + tail + '</div></div>';
     bindEditor(id);
     updatePreview();
   }
