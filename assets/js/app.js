@@ -75,12 +75,19 @@
     w.innerHTML =
       '<a class="hp" href="#/page/' + p.id + '" data-route="/page/' + p.id + '">' +
         '<div class="hp__photo">' + (ph ? '<img src="' + ph + '" alt="' + L(p.name) + '">' : portrait(L(p.name))) + '</div>' +
+        /* zweispaltig: links Name+Daten, rechts Zitat+Chips+Link — spart Höhe, das Foto wird größer */
         '<div class="hp__body">' +
-          '<div class="hp__name">' + L(p.name) + '</div>' +
-          '<div class="hp__dates">' + p.dates + '</div>' +
-          '<p class="hp__quote">' + (p.quoteReal === false ? (L(p.quote) || blurb(p)) : '«' + (L(p.quote) || blurb(p)) + '»') + '</p>' +
-          '<div class="hp__chips">' + chips + '</div>' +
-          '<span class="hp__view link-arrow">' + t("teaser.viewPage") + ICON.chevron + '</span>' +
+          '<div class="hp__col">' +
+            '<div class="hp__name">' + L(p.name) + '</div>' +
+            '<div class="hp__dates">' + p.dates + '</div>' +
+          '</div>' +
+          '<div class="hp__col hp__col--side">' +
+            '<p class="hp__quote">' + (p.quoteReal === false ? (L(p.quote) || blurb(p)) : '«' + (L(p.quote) || blurb(p)) + '»') + '</p>' +
+            '<div class="hp__row">' +
+              '<div class="hp__chips">' + chips + '</div>' +
+              '<span class="hp__view link-arrow">' + t("teaser.viewPage") + ICON.chevron + '</span>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</a>';
   }
@@ -194,7 +201,7 @@
     var g = $("#articlesGrid"); if (!g) return; g.innerHTML = "";
     D.articles.forEach(function (a) {
       var c = el("a", "acard"); c.href = "#";
-      c.innerHTML = '<img src="assets/img/article-photo.png" alt="">' +
+      c.innerHTML = '<img src="' + (a.img || "assets/img/article-photo.png") + '" alt="' + esc(L(a.title)) + '" loading="lazy">' +
         '<div class="acard__body"><div class="acard__label">' + t("articles.label") + '</div><div class="acard__title">' + L(a.title) + '</div></div>';
       g.appendChild(c);
     });

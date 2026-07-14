@@ -79,10 +79,10 @@ window.DATA = {
     { img: "assets/img/article-photo.png",
       text: { de: "Bewahre die Verbindung zwischen den Generationen.",
               ru: "Сохраните связь между поколениями." } },
-    { img: null,
+    { img: "assets/img/share-family.jpg",
       text: { de: "Erinnere dich an gemeinsame Familienmomente.",
               ru: "Вспомните семейные моменты." } },
-    { img: null,
+    { img: "assets/img/share-child.jpg",
       text: { de: "Bring deinem Kind bei, das Andenken der Vorfahren zu bewahren.",
               ru: "Научите ребёнка хранить память предков и смотреть страницу." } }
   ],
@@ -107,13 +107,19 @@ window.DATA = {
   },
 
   articles: [
-    { title: { de: "Das Schweigen der Vorfahren: warum wir Familiengeschichten verlieren – und wie wir es aufhalten",
+    { img: "assets/img/article-1.jpg",
+      title: { de: "Das Schweigen der Vorfahren: warum wir Familiengeschichten verlieren – und wie wir es aufhalten",
                ru: "Молчание предков: почему мы теряем семейные истории и как это остановить" } },
-    { title: { de: "Wie ich ein digitales Porträt meines Großvaters erschuf: von der Fotokiste zur interaktiven Biografie",
+    { img: "assets/img/article-2.jpg",
+      title: { de: "Wie ich ein digitales Porträt meines Großvaters erschuf: von der Fotokiste zur interaktiven Biografie",
                ru: "Как я создал цифровой портрет своего деда: от коробки с фото до интерактивной биографии" } },
-    { title: { de: "Papieralbum vs. digitales Profil auf ewig.me",
+    /* TODO: Bild 5 ("VS") enthält gut lesbaren russischen UI-Text -> verstößt gegen die Regel
+       "UI-Sprache nur Deutsch". Bis zur deutschen Neufassung bleibt das alte Platzhalterbild. */
+    { img: "assets/img/article-photo.png",
+      title: { de: "Papieralbum vs. digitales Profil auf ewig.me",
                ru: "Бумажный альбом vs. цифровой профиль ewig.me" } },
-    { title: { de: "5 Wege, die Geschichte Ihrer Familie zu bewahren",
+    { img: "assets/img/article-4.jpg",
+      title: { de: "5 Wege, die Geschichte Ihrer Familie zu bewahren",
                ru: "5 способов сохранить историю вашей семьи" } }
   ],
 
