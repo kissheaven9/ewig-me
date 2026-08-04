@@ -13,6 +13,17 @@
   function personPhoto(id) { var g = G[id]; return (g && g[0] && g[0].src) || null; }
   function infoVal(person, keyDe) { var f = (person.info || []).filter(function (x) { return x.k.de === keyDe; })[0]; return f ? f.v : null; }
 
+  /* DEMO_MODE = true: keine echten Zahlungen, keine Persistenz auf dem Server.
+     Steuert den Demo-Hinweis auf den Rechtsseiten und an der Kasse.
+     BEIM START ECHTER ZAHLUNGEN auf false setzen (Punkt 1 des Handoffs) —
+     erst dann darf das Impressum als Angebot eines echten Anbieters auftreten. */
+  var DEMO_MODE = true;
+
+  /* Version des Einwilligungs-Wortlauts. Bei JEDER Textänderung an cr.rights /
+     co.widerruf* hochzählen — sonst lässt sich später nicht sagen, wem der
+     Nutzer damals zugestimmt hat. */
+  var CONSENT_VERSION = "2026-07-17";
+
   /* ИИ-биограф: URL прокси (Cloudflare Worker с ключом OpenAI). Пусто = имитация. */
   var AI_PROXY_DEFAULT = "https://ewig-ai.kissheaven99.workers.dev";
   var AI_PROXY = (AI_PROXY_DEFAULT || localStorage.getItem("ewig_ai_proxy") || "").trim();
@@ -352,6 +363,9 @@
     var p = path.replace(/^\//, "").split("/"), seg = p[0], id = p[1];
     if (seg === "page") { renderPublic(id); showScreen("page"); }
     else if (seg === "artikel") { renderArticle(id); showScreen("article"); }
+    else if (seg === "recht") { renderLegal(id); showScreen("legal"); }
+    else if (seg === "impressum") { renderLegalDoc("impressum"); showScreen("legal"); }
+    else if (seg === "datenschutz") { renderLegalDoc("datenschutz"); showScreen("legal"); }
     else if (seg === "create") { renderCreate(); showScreen("create"); }
     else if (seg === "editor") { renderEditor(id); showScreen("editor"); }
     else if (seg === "ai") { renderAI(id); showScreen("ai"); }
@@ -514,7 +528,10 @@
         '<div class="form-grid">' + dateField("fBirth", t("cr.birth")) + dateField("fDeath", t("cr.death")) + '</div>' +
         '<div class="field" style="margin-top:24px"><label>' + t("cr.epitaph") + '</label><textarea id="fEpitaph" placeholder="' + t("cr.epitaphPh") + '"></textarea></div>' +
         '<div class="field" style="margin-top:20px"><label>' + t("cr.author") + '</label><input id="fAuthor" type="text" placeholder="' + t("cr.authorPh") + '"></div>' +
-        '<div class="ed-actions" style="margin-top:28px"><button class="btn btn--primary" id="crNext">' + ICON.plus + '<span>' + t("cr.create") + '</span></button></div>' +
+        /* §22 KUG: Pflicht-Bestätigung der Bildrechte, ohne Häkchen kein Anlegen */
+        '<label class="check" style="margin-top:24px"><input type="checkbox" id="fRights"><span>' + t("cr.rights") + '</span></label>' +
+        '<div class="field__err" id="fRightsErr"></div>' +
+        '<div class="ed-actions" style="margin-top:20px"><button class="btn btn--primary" id="crNext" disabled>' + ICON.plus + '<span>' + t("cr.create") + '</span></button></div>' +
         '</div></div><div class="wizard__bar"><span style="height:20%"></span></div></div></div>';
       var upFile = $("#upFile"), upBox = $("#upBox");
       // label уже открывает диалог по клику — свой click НЕ вешаем (двойной вызов ломал выбор)
@@ -528,7 +545,13 @@
         };
         r.readAsDataURL(f);
       });
-      $("#crNext").addEventListener("click", function () {
+      var rights = $("#fRights"), crNext = $("#crNext");
+      rights.addEventListener("change", function () {
+        crNext.disabled = !rights.checked;
+        if (rights.checked) $("#fRightsErr").textContent = "";
+      });
+      crNext.addEventListener("click", function () {
+        if (!rights.checked) { $("#fRightsErr").textContent = t("cr.rightsErr"); return; }
         var nm = $("#fName").value.trim();
         if (!nm) { $("#fName").parentNode.classList.add("is-invalid"); $("#fName").parentNode.querySelector(".field__err").textContent = "!"; return; }
         state.newPage.name = nm;
@@ -536,6 +559,10 @@
         state.newPage.died = ($("#fDeath_y") ? $("#fDeath_y").value : "") || "";
         state.newPage.epitaph = $("#fEpitaph").value.trim();
         state.newPage.author = $("#fAuthor").value.trim();
+        /* Einwilligung als Nachweis festhalten: Zeitpunkt + Wortlaut-Version.
+           ACHTUNG: liegt bis zum Backend nur im localStorage und ist damit
+           NICHT gerichtsfest — beim Backend-Umzug mit der Seite übertragen. */
+        state.newPage.consentRights = { at: new Date().toISOString(), v: CONSENT_VERSION, text: t("cr.rights") };
         state.newPage.step = 2; renderCreate();
       });
     } else if (s === 2) {
@@ -556,7 +583,8 @@
     var base = (np.name || "seite").toLowerCase().replace(/[^a-z0-9]/gi, "").slice(0, 8) || "seite";
     var id = "u" + (getPages().length + 1) + base;
     var page = { id: id, name: np.name || "—", born: np.born || "", died: np.died || "",
-      epitaph: np.epitaph || "", author: np.author || "", photo: np.photo || null, plan: "short", pub: true };
+      epitaph: np.epitaph || "", author: np.author || "", photo: np.photo || null, plan: "short", pub: true,
+      consents: { rights: np.consentRights || null } };
     savePage(page); state.newPage = null; state.lastCreated = id;
     toast(t("cr.done"));
     go("/page/" + id); // сразу показываем созданную страницу
@@ -802,6 +830,62 @@
     });
   }
 
+  /* ---------- RECHTLICHES (Impressum / Datenschutz / AGB / Kontakt) ----------
+     Eigene Seiten statt eines gemeinsamen Platzhalter-Dialogs.
+     Die juristischen Volltexte liefert der Anwalt; hier steht so lange legal.draft.
+     DEMO_MODE steuert den Demo-Hinweis an EINER Stelle — beim Start echter
+     Zahlungen auf false setzen (Punkt 1 des Handoffs), dann verschwindet er überall. */
+  var LEGAL_PAGES = ["impressum", "privacy", "terms", "contact"];
+
+  function demoNote() {
+    return DEMO_MODE ? '<div class="notice notice--demo">' + t("legal.placeholder") + '</div>' : "";
+  }
+
+  /* Impressum / Datenschutzerklärung — fertige Texte (Routen #/impressum, #/datenschutz).
+     Platzhalter in [ECKIGEN KLAMMERN] füllt die Betreiberin vor dem echten Start aus. */
+  function renderLegalDoc(kind) {
+    var wrap = $("#screen-legal"); if (!wrap) return;
+    var title = t(kind === "impressum" ? "legal.impressum" : "legal.privacy");
+    wrap.innerHTML = '<div class="container subpage">' + backLink() +
+      '<article class="post post--legal">' +
+        '<h1 class="post__title">' + title + '</h1>' +
+        '<div class="post__body">' + t("legal." + kind + "Body") + '</div>' +
+      '</article></div>';
+    window.scrollTo(0, 0);
+    document.title = title + " | ewig.me";
+    setMeta("description", title + " – ewig.me");
+    setJSONLD(null);
+  }
+
+  function renderLegal(id) {
+    var wrap = $("#screen-legal"); if (!wrap) return;
+    if (LEGAL_PAGES.indexOf(id) === -1) id = "impressum";
+    if (id === "impressum") return renderLegalDoc("impressum"); // alte Route /recht/impressum → fertiger Text
+    if (id === "privacy") return renderLegalDoc("datenschutz"); // alte Route /recht/privacy → fertiger Text
+    var title = t("legal." + id), body;
+
+    if (id === "contact") {
+      body = '<p>' + t("legal.contactText") + '</p>' +
+        '<div class="ed-actions" style="margin-top:22px">' +
+          '<button class="btn btn--primary" data-route="/telegram"><span>' + t("legal.contact") + ' · Telegram</span></button>' +
+        '</div>' +
+        '<h2>' + t("legal.reportTitle") + '</h2><p>' + t("legal.reportText") + '</p>';
+    } else {
+      body = '<p>' + t("legal.draft") + '</p>';
+    }
+
+    wrap.innerHTML = '<div class="container subpage">' + backLink() +
+      '<article class="post post--legal">' +
+        '<h1 class="post__title">' + title + '</h1>' +
+        demoNote() +
+        '<div class="post__body">' + body + '</div>' +
+      '</article></div>';
+    window.scrollTo(0, 0);
+    document.title = title + " | ewig.me";
+    setMeta("description", title + " – ewig.me");
+    setJSONLD(null);
+  }
+
   /* ---------- CABINET ---------- */
   function renderCabinet() {
     var pages = getPages(); var wrap = $("#screen-cabinet");
@@ -858,15 +942,6 @@
   function bind() {
     $all("#langSwitch button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); }); });
     document.addEventListener("click", function (e) {
-      var lg = e.target.closest("[data-legal]");
-      if (lg) {
-        e.preventDefault();
-        openModal('<button class="modal__close" data-x>' + ICON.close + '</button>' +
-          '<h3 class="modal__title">' + t("legal." + lg.getAttribute("data-legal")) + '</h3>' +
-          '<p style="color:var(--ink-body);line-height:1.6">' + t("legal.placeholder") + '</p>');
-        var x = $("#modalDialog [data-x]"); if (x) x.addEventListener("click", closeModal);
-        return;
-      }
       var r = e.target.closest("[data-route]");
       if (r) { e.preventDefault(); go(r.getAttribute("data-route")); }
     });

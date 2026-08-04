@@ -4,7 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ewig.me — Digitale Gedenkseite erstellen</title>
-  <meta name="description" content="ewig.me — erstelle eine würdige digitale Gedenkseite mit Fotos, Biografie, Karte und QR-Code. Kostenlos starten.">
+  <meta name="description" content="Erstelle in 5 Minuten eine würdige digitale Gedenkseite mit Fotos, Biografie, Karte und QR-Code für das Grabmal. Kostenlos starten – ewig.me.">
+  <link rel="canonical" href="https://ewig.me/">
+  <meta property="og:title" content="ewig.me — Digitale Gedenkseite erstellen">
+  <meta property="og:description" content="Erstelle in 5 Minuten eine würdige digitale Gedenkseite mit Fotos, Biografie, Karte und QR-Code für das Grabmal. Kostenlos starten.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ewig.me/">
+  <meta property="og:image" content="https://ewig.me/assets/img/share-qr.jpg">
+  <meta property="og:image:width" content="1536">
+  <meta property="og:image:height" content="1024">
+  <meta property="og:site_name" content="ewig.me">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ewig.me — Digitale Gedenkseite erstellen">
+  <meta name="twitter:description" content="Erstelle in 5 Minuten eine würdige digitale Gedenkseite mit Fotos, Biografie, Karte und QR-Code für das Grabmal. Kostenlos starten.">
+  <meta name="twitter:image" content="https://ewig.me/assets/img/share-qr.jpg">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+    {"@type":"WebSite","name":"ewig.me","url":"https://ewig.me/","inLanguage":"de"},
+    {"@type":"Organization","name":"ewig.me","url":"https://ewig.me/","logo":"https://ewig.me/assets/img/logo-mark.png"}
+  ]}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Bebas+Neue&family=Russo+One&family=Montez&display=swap" rel="stylesheet">
@@ -175,6 +195,7 @@
   <!-- SUB-SCREENS (рендерятся из app.js) -->
   <main id="screen-page" class="screen"></main>
   <main id="screen-article" class="screen"></main>
+  <main id="screen-legal" class="screen"></main>
   <main id="screen-create" class="screen"></main>
   <main id="screen-editor" class="screen"></main>
   <main id="screen-ai" class="screen"></main>
@@ -202,10 +223,10 @@
       <div class="footer__legal">
         <span class="footer__copy" data-i18n="footer.copyright"></span>
         <nav class="footer__legal-links">
-          <a href="#/" data-legal="impressum" data-i18n="legal.impressum">Impressum</a>
-          <a href="#/" data-legal="privacy" data-i18n="legal.privacy">Datenschutz</a>
-          <a href="#/" data-legal="terms" data-i18n="legal.terms">AGB</a>
-          <a href="#/" data-route="/telegram" data-i18n="legal.contact">Kontakt</a>
+          <a href="#/impressum" data-route="/impressum" data-i18n="legal.impressum">Impressum</a>
+          <a href="#/datenschutz" data-route="/datenschutz" data-i18n="legal.privacy">Datenschutz</a>
+          <a href="#/recht/terms" data-route="/recht/terms" data-i18n="legal.terms">AGB</a>
+          <a href="#/recht/contact" data-route="/recht/contact" data-i18n="legal.contact">Kontakt</a>
         </nav>
       </div>
     </div>
@@ -225,10 +246,10 @@
       <a href="#/" data-route="/cabinet" data-i18n="footer.cabinet">Mein Konto</a>
       <button class="btn btn--primary btn--block" style="margin-top:16px" data-route="/create"><span data-i18n="cta.create">Seite erstellen</span></button>
       <div class="mobile-nav__legal">
-        <a href="#/" data-route="/telegram" data-i18n="legal.contact">Kontakt</a>
-        <a href="#/" data-legal="impressum" data-i18n="legal.impressum">Impressum</a>
-        <a href="#/" data-legal="privacy" data-i18n="legal.privacy">Datenschutz</a>
-        <a href="#/" data-legal="terms" data-i18n="legal.terms">AGB</a>
+        <a href="#/recht/contact" data-route="/recht/contact" data-i18n="legal.contact">Kontakt</a>
+        <a href="#/impressum" data-route="/impressum" data-i18n="legal.impressum">Impressum</a>
+        <a href="#/datenschutz" data-route="/datenschutz" data-i18n="legal.privacy">Datenschutz</a>
+        <a href="#/recht/terms" data-route="/recht/terms" data-i18n="legal.terms">AGB</a>
       </div>
     </div>
   </div>
@@ -237,10 +258,10 @@
   <div class="toast-wrap" id="toastWrap"></div>
 
   <script src="assets/js/qrcode.js"></script>
-  <script src="assets/js/i18n.js?v=20"></script>
-  <script src="assets/js/data.js?v=16"></script>
+  <script src="assets/js/i18n.js?v=22"></script>
+  <script src="assets/js/data.js?v=17"></script>
   <script src="assets/js/articles.js?v=1"></script>
   <script src="assets/js/people.js?v=17"></script>
-  <script src="assets/js/app.js?v=27"></script>
+  <script src="assets/js/app.js?v=28"></script>
 </body>
 </html>

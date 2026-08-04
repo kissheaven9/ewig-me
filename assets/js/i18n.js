@@ -71,6 +71,62 @@ window.I18N = {
     "legal.terms": "AGB",
     "legal.contact": "Kontakt",
     "legal.placeholder": "Diese Angaben werden derzeit erstellt und in Kürze ergänzt. Dies ist eine Demo-Seite (Portfolio) ohne kommerziellen Betrieb.",
+    /* Rechtstexte: Platzhalter, bis der Anwalt liefert. Der Demo-Hinweis wird erst
+       entfernt, wenn echte Zahlungen scharf geschaltet werden (Punkt 1 des Handoffs). */
+    "legal.draft": "Dieser Text wird derzeit juristisch erstellt und in Kürze ergänzt.",
+    "legal.contactText": "Schreiben Sie uns – wir antworten in der Regel innerhalb eines Werktages.",
+    "legal.reportTitle": "Inhalt melden",
+    "legal.reportText": "Wenn eine Gedenkseite Ihre Rechte verletzt – etwa das Recht am eigenen Bild – melden Sie uns die Seite. Wir prüfen jede Meldung und entfernen rechtswidrige Inhalte.",
+
+    /* Fertige Rechtstexte für #/impressum und #/datenschutz.
+       Betreiberdaten: GU-FI GmbH (identisch mit donauhoefe.de). */
+    "legal.impressumBody":
+      "<p>Angaben gemäß § 5 DDG</p>" +
+      "<p><strong>Betreiber:</strong><br>GU-FI GmbH</p>" +
+      "<p><strong>Anschrift:</strong><br>Röntgenstraße 40a<br>86368 Gersthofen</p>" +
+      "<p><strong>Vertreten durch den Geschäftsführer:</strong><br>Oleksandr Tykhomirov</p>" +
+      "<p><strong>Kontakt:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Telefon: +49 151 22555558</p>" +
+      "<p><strong>Registereintrag:</strong><br>Amtsgericht Augsburg, HRB 36880</p>" +
+      "<p><strong>USt-IdNr.:</strong><br>DE436392539</p>" +
+      "<p><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:</strong><br>Oleksandr Tykhomirov, Anschrift wie oben.</p>" +
+      "<p>Hinweis: ewig.me ist derzeit eine Demo-Seite (Portfolio) ohne kommerziellen Betrieb.</p>",
+
+    "legal.datenschutzBody":
+      "<p>Der Schutz Ihrer Daten ist uns wichtig. Diese Website kommt ohne Cookies, ohne Tracking und ohne Analyse-Tools aus. Nachfolgend informieren wir Sie darüber, welche Daten bei der Nutzung von ewig.me verarbeitet werden.</p>" +
+      "<h2>Verantwortlicher</h2>" +
+      "<p>GU-FI GmbH, Röntgenstraße 40a, 86368 Gersthofen<br>Kontakt: siehe Impressum.</p>" +
+      "<h2>Hosting (GitHub Pages)</h2>" +
+      "<p>Diese Website wird bei GitHub Pages gehostet (GitHub, Inc., USA). Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Server-Logs – insbesondere IP-Adresse, Datum und Uhrzeit des Zugriffs, abgerufene Dateien und Browser-Kennung (Art. 6 Abs. 1 lit. f DSGVO). Dabei kann eine Übermittlung in die USA stattfinden. Wir selbst haben auf diese Logs keinen Zugriff und führen keine eigene Protokollierung durch.</p>" +
+      "<h2>Schriftarten (Google Fonts)</h2>" +
+      "<p>Die verwendeten Schriften werden von Servern von Google (Google Fonts) geladen. Dabei wird Ihre IP-Adresse an Google übertragen; eine Übermittlung in die USA ist möglich. Rechtsgrundlage ist unser berechtigtes Interesse an einer einheitlichen Darstellung (Art. 6 Abs. 1 lit. f DSGVO).</p>" +
+      "<h2>Lokale Speicherung (localStorage)</h2>" +
+      "<p>Ihre Sprachauswahl und Entwürfe von Gedenkseiten werden ausschließlich lokal in Ihrem Browser gespeichert (localStorage). Diese Daten werden nicht an uns oder Dritte übertragen und können jederzeit über die Browser-Einstellungen gelöscht werden.</p>" +
+      "<h2>KI-Funktion „Biograf“</h2>" +
+      "<p>Wenn Sie den KI-Assistenten zur Erstellung einer Biografie nutzen, werden Ihre eingegebenen Texte über unseren eigenen Proxy (Cloudflare Workers) an OpenAI übermittelt, um einen Textvorschlag zu erzeugen. Die Texte werden auf dem Proxy-Server nicht gespeichert und laut OpenAI nicht zum Training von KI-Modellen verwendet. Eine Übermittlung in die USA findet statt. Die Nutzung ist freiwillig – bitte geben Sie keine besonders sensiblen Daten ein.</p>" +
+      "<h2>QR-Codes</h2>" +
+      "<p>QR-Codes werden vollständig lokal in Ihrem Browser erzeugt. Dabei werden keine Daten an Server übertragen.</p>" +
+      "<h2>Keine Cookies, kein Tracking</h2>" +
+      "<p>Diese Website setzt keine Cookies, verwendet keine Analyse- oder Marketing-Tools und erstellt keine Nutzungsprofile.</p>" +
+      "<h2>Ihre Rechte</h2>" +
+      "<p>Sie haben nach der DSGVO das Recht auf:</p>" +
+      "<ul><li>Auskunft über Ihre gespeicherten Daten (Art. 15 DSGVO)</li>" +
+      "<li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>" +
+      "<li>Löschung (Art. 17 DSGVO)</li>" +
+      "<li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>" +
+      "<li>Datenübertragbarkeit (Art. 20 DSGVO)</li>" +
+      "<li>Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li></ul>" +
+      "<p>Außerdem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Zur Ausübung Ihrer Rechte genügt eine formlose E-Mail an die im Impressum angegebene Adresse.</p>" +
+      "<p>Stand: August 2026. Hinweis: ewig.me ist derzeit eine Demo-Seite (Portfolio) ohne kommerziellen Betrieb.</p>",
+
+    "cr.rights": "Ich bestätige, dass ich das Recht habe, diese Fotos und Daten zu veröffentlichen, und keine Rechte Dritter verletze (insbesondere das Recht am eigenen Bild, §22 KUG).",
+    "cr.rightsErr": "Bitte bestätigen Sie diesen Punkt, um fortzufahren.",
+
+    "co.widerruf1": "Ich stimme zu, dass die Ausführung des Vertrags vor Ablauf der Widerrufsfrist beginnt.",
+    "co.widerruf2": "Ich bestätige, dass ich mit Beginn der Vertragserfüllung mein Widerrufsrecht verliere.",
+    "co.widerrufErr": "Bitte bestätigen Sie beide Punkte, um fortzufahren.",
+    "co.vatNote": "Endpreis inkl. 19 % MwSt.",
+    "co.payHosted": "Die Zahlung erfolgt über unseren Zahlungsdienstleister. Kartendaten werden nicht auf dieser Seite eingegeben.",
+    "co.demo": "Demo-Modus: Es findet keine echte Zahlung statt.",
 
     "pub.back": "Zurück zur Startseite", "pub.info": "Kurzinformation", "pub.bio": "Biografie",
     "pub.media": "Medien", "pub.photos": "Fotos", "pub.grave": "Wie finde ich das Grab",
@@ -202,6 +258,59 @@ window.I18N = {
     "legal.terms": "AGB",
     "legal.contact": "Kontakt",
     "legal.placeholder": "Diese Angaben werden derzeit erstellt und in Kürze ergänzt. Dies ist eine Demo-Seite (Portfolio) ohne kommerziellen Betrieb.",
+    "legal.draft": "Текст готовится юристом и будет добавлен в ближайшее время.",
+    "legal.contactText": "Напишите нам — обычно отвечаем в течение одного рабочего дня.",
+    "legal.reportTitle": "Сообщить о нарушении",
+    "legal.reportText": "Если страница памяти нарушает ваши права — например, право на изображение, — сообщите нам. Мы проверяем каждое обращение и удаляем противоправный контент.",
+
+    /* Данные оператора: GU-FI GmbH (как на donauhoefe.de). */
+    "legal.impressumBody":
+      "<p>Сведения согласно § 5 DDG (закон ФРГ о цифровых услугах)</p>" +
+      "<p><strong>Оператор сайта:</strong><br>GU-FI GmbH</p>" +
+      "<p><strong>Адрес:</strong><br>Röntgenstraße 40a<br>86368 Gersthofen, Deutschland</p>" +
+      "<p><strong>Управляющий директор:</strong><br>Oleksandr Tykhomirov</p>" +
+      "<p><strong>Контакт:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Телефон: +49 151 22555558</p>" +
+      "<p><strong>Регистрация:</strong><br>Amtsgericht Augsburg, HRB 36880</p>" +
+      "<p><strong>USt-IdNr. (ИНН ЕС):</strong><br>DE436392539</p>" +
+      "<p><strong>Ответственный за контент (§ 18 Abs. 2 MStV):</strong><br>Oleksandr Tykhomirov, адрес выше.</p>" +
+      "<p>Примечание: ewig.me — демонстрационный сайт (портфолио) без коммерческой деятельности.</p>",
+
+    "legal.datenschutzBody":
+      "<p>Защита ваших данных важна для нас. Этот сайт работает без cookies, без трекинга и без систем аналитики. Ниже — какие данные обрабатываются при использовании ewig.me.</p>" +
+      "<h2>Ответственный (Verantwortlicher)</h2>" +
+      "<p>GU-FI GmbH, Röntgenstraße 40a, 86368 Gersthofen<br>Контакты: см. Impressum.</p>" +
+      "<h2>Хостинг (GitHub Pages)</h2>" +
+      "<p>Сайт размещён на GitHub Pages (GitHub, Inc., США). При открытии страницы GitHub обрабатывает технически необходимые серверные логи — IP-адрес, дату и время запроса, запрошенные файлы и данные браузера (ст. 6 п. 1 lit. f GDPR). Возможна передача данных в США. У нас нет доступа к этим логам, собственное журналирование мы не ведём.</p>" +
+      "<h2>Шрифты (Google Fonts)</h2>" +
+      "<p>Используемые шрифты загружаются с серверов Google (Google Fonts). При этом ваш IP-адрес передаётся Google; возможна передача в США. Правовое основание — законный интерес в единообразном отображении сайта (ст. 6 п. 1 lit. f GDPR).</p>" +
+      "<h2>Локальное хранение (localStorage)</h2>" +
+      "<p>Выбор языка и черновики страниц памяти хранятся только локально в вашем браузере (localStorage). Эти данные не передаются ни нам, ни третьим лицам; их можно удалить в настройках браузера.</p>" +
+      "<h2>ИИ-функция «Биограф»</h2>" +
+      "<p>Если вы пользуетесь ИИ-помощником для создания биографии, введённые вами тексты передаются через наш собственный прокси (Cloudflare Workers) в OpenAI для генерации текста. Тексты не сохраняются на сервере прокси и, согласно OpenAI, не используются для обучения моделей. Передача данных в США имеет место. Использование добровольно — не вводите особо чувствительные данные.</p>" +
+      "<h2>QR-коды</h2>" +
+      "<p>QR-коды генерируются полностью локально в вашем браузере, данные никуда не передаются.</p>" +
+      "<h2>Без cookies и трекинга</h2>" +
+      "<p>Сайт не использует cookies, аналитические и маркетинговые инструменты и не строит профили пользователей.</p>" +
+      "<h2>Ваши права</h2>" +
+      "<p>Согласно GDPR вы имеете право на:</p>" +
+      "<ul><li>доступ к своим данным (ст. 15 GDPR)</li>" +
+      "<li>исправление неверных данных (ст. 16 GDPR)</li>" +
+      "<li>удаление (ст. 17 GDPR)</li>" +
+      "<li>ограничение обработки (ст. 18 GDPR)</li>" +
+      "<li>переносимость данных (ст. 20 GDPR)</li>" +
+      "<li>возражение против обработки (ст. 21 GDPR)</li></ul>" +
+      "<p>Вы также вправе подать жалобу в надзорный орган по защите данных. Для реализации прав достаточно письма на e-mail, указанный в Impressum.</p>" +
+      "<p>Редакция: август 2026. Примечание: ewig.me — демонстрационный сайт (портфолио) без коммерческой деятельности.</p>",
+
+    "cr.rights": "Подтверждаю, что имею право размещать эти фотографии и данные и не нарушаю права третьих лиц (в т. ч. право на изображение, §22 KUG).",
+    "cr.rightsErr": "Пожалуйста, подтвердите этот пункт, чтобы продолжить.",
+
+    "co.widerruf1": "Согласен(-на), что исполнение договора начинается до истечения срока отказа (Widerrufsfrist).",
+    "co.widerruf2": "Подтверждаю, что с началом исполнения договора теряю право на отказ (Widerrufsrecht).",
+    "co.widerrufErr": "Пожалуйста, подтвердите оба пункта, чтобы продолжить.",
+    "co.vatNote": "Итоговая цена, включая 19 % НДС.",
+    "co.payHosted": "Оплата проходит через нашего платёжного провайдера. Данные карты на этом сайте не вводятся.",
+    "co.demo": "Демо-режим: реальная оплата не производится.",
 
     "pub.back": "На главную", "pub.info": "Краткая информация", "pub.bio": "Биография",
     "pub.media": "Медиафайлы", "pub.photos": "Фотографии", "pub.grave": "Как найти захоронение",

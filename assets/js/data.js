@@ -73,7 +73,7 @@ window.DATA = {
   ],
 
   share: [
-    { img: "assets/img/share-qr.png",
+    { img: "assets/img/share-qr.jpg",
       text: { de: "Bringe ein Schild mit dem Link zur Erinnerungsseite an.",
               ru: "Разместите табличку со ссылкой на страницу памяти." } },
     { img: "assets/img/article-photo.png",
