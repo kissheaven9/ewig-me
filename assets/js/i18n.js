@@ -85,7 +85,7 @@ window.I18N = {
       "<p><strong>Betreiber:</strong><br>GU-FI GmbH</p>" +
       "<p><strong>Anschrift:</strong><br>Röntgenstraße 40a<br>86368 Gersthofen</p>" +
       "<p><strong>Vertreten durch den Geschäftsführer:</strong><br>Oleksandr Tykhomirov</p>" +
-      "<p><strong>Kontakt:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Telefon: +49 174 5893955</p>" +
+      "<p><strong>Kontakt:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Telefon: +49 151 22555558</p>" +
       "<p><strong>Registereintrag:</strong><br>Amtsgericht Augsburg, HRB 36880</p>" +
       "<p><strong>USt-IdNr.:</strong><br>DE436392539</p>" +
       "<p><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:</strong><br>Oleksandr Tykhomirov, Anschrift wie oben.</p>" +
@@ -269,7 +269,7 @@ window.I18N = {
       "<p><strong>Оператор сайта:</strong><br>GU-FI GmbH</p>" +
       "<p><strong>Адрес:</strong><br>Röntgenstraße 40a<br>86368 Gersthofen, Deutschland</p>" +
       "<p><strong>Управляющий директор:</strong><br>Oleksandr Tykhomirov</p>" +
-      "<p><strong>Контакт:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Телефон: +49 174 5893955</p>" +
+      "<p><strong>Контакт:</strong><br>E-Mail: kontakt@donauhoefe.de<br>Телефон: +49 151 22555558</p>" +
       "<p><strong>Регистрация:</strong><br>Amtsgericht Augsburg, HRB 36880</p>" +
       "<p><strong>USt-IdNr. (ИНН ЕС):</strong><br>DE436392539</p>" +
       "<p><strong>Ответственный за контент (§ 18 Abs. 2 MStV):</strong><br>Oleksandr Tykhomirov, адрес выше.</p>" +
